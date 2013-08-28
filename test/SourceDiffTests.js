@@ -24,25 +24,25 @@ test("LCS with cs of length 1", function () {
     assertEquals("a", cs);
 });
 
-test("LCS with cs of length 4", function () {
+test("LCS with abde", function () {
     var cs = lcs("abdef", "abdabde");
 
     assertEquals("abde", cs);
 });
 
-test("LCS with cs of length 4", function () {
+test("LCS with BCDG", function () {
     var cs = lcs("ABCDEFG", "BCDGK");
 
     assertEquals("BCDG", cs);
 });
 
-test("LCS", function () {
+test("LCS with MJAU", function () {
     var cs = lcs("XMJYAUZ", "MZJAWXU");
 
     assertEquals("MJAU", cs);
 });
 
-test("Xml snippet 2", function () {
+test("Xml snippet", function () {
     var cs = lcs('<CATEGORY desc="Search Warrants Issued"><LINE>4</LINE></CATEGORY>', '<CATEGORY desc="Search Warrants"><LINE>5</LINE><NEW /></CATEGORY>');
 
     assertEquals('<CATEGORY desc="Search Warrants"><LINE></LINE></CATEGORY>', cs);
@@ -100,4 +100,22 @@ test("lcs phrase", function() {
     var common = lcs("the rain", "curse the");
 
     assertEquals("the", common);
+});
+
+test("line diff", function() {
+    var result = diff("if (cond)\ndoSomething()", "doSomething()");
+
+    assertEquals({added: '', deleted: 'if (cond)\n'}, result);
+});
+
+//test("line diff2", function() {
+//    var result = diff("if (cond)\ndoSomething()", "//no check needed\ndoNothing()");
+//
+//    assertEquals({added: '//no check needed\ndoNothing()', deleted: 'if (cond)\ndoSomething()'}, result);
+//});
+
+test("line diff3", function() {
+    var result = diff("doSomething()", "if (cond)\ndoSomething()");
+
+    assertEquals({added: 'if (cond)\n', deleted: ''}, result);
 });
