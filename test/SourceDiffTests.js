@@ -48,74 +48,79 @@ test("Xml snippet", function () {
     assertEquals('<CATEGORY desc="Search Warrants"><LINE></LINE></CATEGORY>', cs);
 });
 
-test("Trim trims any common prefixes", function() {
-    var trimmed = trim("cat in the hat", "cat in the bag");
-
-    assertEquals(["hat", "bag"], trimmed);
-});
-
-test("Trim handles identical input", function() {
-    var trimmed = trim("cat", "cat");
-
-    assertEquals(["", ""], trimmed);
-});
-
-test("Trim handles complete substring", function() {
-    var trimmed = trim("cat", "category");
-
-    assertEquals(["", "egory"], trimmed);
-});
-
-test("Trim handles common suffixes", function() {
-    var trimmed = trim("dancing in the rain", "singing in the rain");
-
-    assertEquals(["danc", "sing"], trimmed);
-});
-
-//test("printDiff", function() {
-//    var result = diff("the rain", "curse the");
-//
-//    assertEquals({added: 'curse ', deleted: ' rain'}, result);
-//});
-
-test("diff with added suffix", function() {
-    var result = diff("cat", "category");
-
-    assertEquals({added: 'egory', deleted: ''}, result);
-});
-
-test("everything is an add", function() {
-    var result = diff('', 'added text');
-
-    assertEquals({added: 'added text', deleted: ''}, result);
-});
-
-test("everything is a delete", function() {
-    var result = diff('delete me', '');
-
-    assertEquals({added: '', deleted: 'delete me'}, result);
-});
-
 test("lcs phrase", function() {
     var common = lcs("the rain", "curse the");
 
     assertEquals("the", common);
 });
 
-test("line diff", function() {
-    var result = diff("if (cond)\ndoSomething()", "doSomething()");
+test("Trim trims any common prefixes", function() {
+    var arr1 = ['cat', 'in', 'the', 'hat'];
+    var arr2 = ['cat', 'in', 'the', 'bag'];
+    trim(arr1, arr2);
 
-    assertEquals({added: '', deleted: 'if (cond)\n'}, result);
+    assertEquals(["hat"], arr1);
+    assertEquals(["bag"], arr2);
 });
 
-//test("line diff2", function() {
-//    var result = diff("if (cond)\ndoSomething()", "//no check needed\ndoNothing()");
-//
-//    assertEquals({added: '//no check needed\ndoNothing()', deleted: 'if (cond)\ndoSomething()'}, result);
-//});
+test("Trim handles identical input", function() {
+    var arr1 = ['cat'];
+    var arr2 = ['cat'];
 
-test("line diff3", function() {
+    trim(arr1, arr2);
+
+    assertEquals([], arr1);
+    assertEquals([], arr2);
+});
+
+test("Trim handles common suffixes", function() {
+    var arr1 = ['dancing', 'in', 'the', 'rain'];
+    var arr2 = ['singing', 'in', 'the', 'rain'];
+
+    trim(arr1, arr2);
+
+    assertEquals(["dancing"], arr1);
+    assertEquals(["singing"], arr2);
+});
+
+test("everything is an add", function() {
+    var result = diff('', 'added text');
+
+    assertEquals({added: ['added text'], deleted: []}, result);
+});
+
+test("Deleting a line", function() {
+    var result = diff('test\ndelete me', 'test');
+
+    assertEquals({added: [], deleted: ['delete me']}, result);
+});
+
+test("Everything is a delete", function() {
+    var result = diff('delete me', '');
+
+    assertEquals({added: [], deleted: ['delete me']}, result);
+});
+
+test("line diff remove and add lines", function() {
+    var result = diff("if (cond)\ndoSomething()\n//a func call", "if (cond)\n//a func call\n//no longer needed");
+
+    assertEquals({added: ['//no longer needed'], deleted: ['doSomething()']}, result);
+});
+
+test("line diff simple delete first line", function() {
+    var result = diff("first line\nsecond line", "second line");
+
+    assertEquals({added: [], deleted: ['first line']}, result);
+});
+
+test("line add and delete", function() {
+    var result = diff("if (cond)\ndoSomething()", "//no check needed\ndoNothing()");
+
+    assertEquals({added: ['//no check needed', 'doNothing()'], deleted: ['if (cond)', 'doSomething()']}, result);
+});
+
+test("line add line at top", function() {
     var result = diff("doSomething()", "if (cond)\ndoSomething()");
 
-    assertEquals({added: 'if (cond)\n', deleted: ''}, result);
+    assertEquals({added: ['if (cond)'], deleted: []}, result);
 });

@@ -1,13 +1,13 @@
 "use strict";
 
-function createMatrix(s1, s2) {
+function createMatrix(s1Lines, s2Lines) {
     var matrix = [];
-    for (var i = 0; i <= s1.length; i++) {
-        matrix[i] = new Array(s2.length + 1);
+    for (var i = 0; i <= s1Lines.length; i++) {
+        matrix[i] = new Array(s2Lines.length + 1);
         matrix[i][0] = 0;
     }
 
-    for (var j = 1; j <= s2.length; j++) {
+    for (var j = 1; j <= s2Lines.length; j++) {
         matrix[0][j] = 0;
     }
 
@@ -15,35 +15,37 @@ function createMatrix(s1, s2) {
 }
 
 function diff(s1, s2) {
-    var result = trim(s1, s2);
-    s1 = result[0];
-    s2 = result[1];
+    var s1Lines = s1.split('\n');    //todo: handle \r?
+    var s2Lines = s2.split('\n');
 
-    var matrix = createMatrix(s1, s2);
+    trim(s1Lines, s2Lines);
 
-    fillMatrix(s1, s2, matrix);
-
-    var i = s1.length;
-    var j = s2.length;
-
-    var added = "";
-    var deleted = "";
-
-    if (i === 0) {
-        added = s2;
-    } else if (j === 0) {
-        deleted = s1;
+    if (s1Lines.length === 1 && s1Lines[0].length === 0) {
+        return {added: [s2], deleted: []};
+    }
+    else if (s2Lines.length === 1 && s2Lines[0].length === 0) {
+        return {added: [], deleted: [s1]};
     }
 
-    while (i > 0 && j > 0) {
-        if (s1[i - 1] === s2[j - 1]) {
+    var matrix = createMatrix(s1Lines, s2Lines);
+
+    fillMatrix(s1Lines, s2Lines, matrix);
+
+    var i = s1Lines.length;
+    var j = s2Lines.length;
+
+    var added = [];
+    var deleted = [];
+
+    while (i >= 0 && j >= 0) {
+        if (s1Lines[i - 1] === s2Lines[j - 1]) {
             i--;
             j--;
-        } else if (j > 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
-            added = s2[j - 1] + added;//added.push(s2[j - 1]);
+        } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
+            added.unshift(s2Lines[j - 1]);
             j--;
-        } else if (i > 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
-            deleted = s1[i - 1] + deleted;
+        } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
+            deleted.unshift(s1Lines[i - 1]);
             i--;
         }
     }
@@ -51,10 +53,10 @@ function diff(s1, s2) {
     return {added: added, deleted: deleted};
 }
 
-function fillMatrix(s1, s2, matrix) {
-    for (var i = 1; i <= s1.length; i++) {
-        for (var j = 1; j <= s2.length; j++) {
-            if (s1[i - 1] === s2[j - 1])
+function fillMatrix(s1Lines, s2Lines, matrix) {
+    for (var i = 1; i <= s1Lines.length; i++) {
+        for (var j = 1; j <= s2Lines.length; j++) {
+            if (s1Lines[i - 1] === s2Lines[j - 1])
                 matrix[i][j] = matrix[i - 1][j - 1] + 1;
             else
                 matrix[i][j] = Math.max(matrix[i][j - 1], matrix[i - 1][j]);
@@ -83,18 +85,16 @@ function backtrack(matrix, s1, s2, i, j) {
     }
 }
 
-function trim(s1, s2) {
-    while (s1.length > 0 && s2.length > 0 && s1[0] === s2[0]) {
-        s1 = s1.substring(1);
-        s2 = s2.substring(1);
+function trim(s1Lines, s2Lines) {
+    while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[0] === s2Lines[0]) {
+        s1Lines.shift(); // = s1Lines.substring(1);
+        s2Lines.shift(); // = s2Lines.substring(1);
     }
 
-    while (s1.length > 0 && s2.length > 0 && s1[s1.length - 1] === s2[s2.length - 1]) {
-        s1 = s1.substring(0, s1.length - 1);
-        s2 = s2.substring(0, s2.length - 1);
+    while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[s1Lines.length - 1] === s2Lines[s2Lines.length - 1]) {
+        s1Lines.pop();// = s1Lines.substring(0, s1Lines.length - 1);
+        s2Lines.pop();// = s2Lines.substring(0, s2Lines.length - 1);
     }
-
-    return [s1, s2];
 }
 
 
