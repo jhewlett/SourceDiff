@@ -66,16 +66,28 @@ test("Trim handles common suffixes", function() {
     assertEquals(["danc", "sing"], trimmed);
 });
 
-test("printDiff", function() {
-    var result = diff("the rain", "curse the");
+//test("printDiff", function() {
+//    var result = diff("the rain", "curse the");
+//
+//    assertEquals({added: 'curse ', deleted: ' rain'}, result);
+//});
 
-    assertEquals({added: 'curse ', deleted: ' rain'}, result);
-});
-
-test("printDiff", function() {
+test("diff with added suffix", function() {
     var result = diff("cat", "category");
 
     assertEquals({added: 'egory', deleted: ''}, result);
+});
+
+test("everything is an add", function() {
+    var result = diff('', 'added text');
+
+    assertEquals({added: 'added text', deleted: ''}, result);
+});
+
+test("everything is a delete", function() {
+    var result = diff('delete me', '');
+
+    assertEquals({added: '', deleted: 'delete me'}, result);
 });
 
 test("lcs phrase", function() {

@@ -15,6 +15,10 @@ function createMatrix(s1, s2) {
 }
 
 function diff(s1, s2) {
+    var result = trim(s1, s2);
+    s1 = result[0];
+    s2 = result[1];
+
     var matrix = createMatrix(s1, s2);
 
     fillMatrix(s1, s2, matrix);
@@ -24,6 +28,12 @@ function diff(s1, s2) {
 
     var added = "";
     var deleted = "";
+
+    if (i === 0) {
+        added = s2;
+    } else if (j === 0) {
+        deleted = s1;
+    }
 
     while (i > 0 && j > 0) {
         if (s1[i - 1] === s2[j - 1]) {
@@ -37,9 +47,6 @@ function diff(s1, s2) {
             i--;
         }
     }
-
-    //moving left is another character that is deleted
-    //mvoing up is another character that was added
 
     return {added: added, deleted: deleted};
 }
