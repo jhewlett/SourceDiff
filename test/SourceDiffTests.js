@@ -65,3 +65,21 @@ test("Trim handles common suffixes", function() {
 
     assertEquals(["danc", "sing"], trimmed);
 });
+
+test("printDiff", function() {
+    var result = diff("the rain", "curse the");
+
+    assertEquals({added: 'curse ', deleted: ' rain'}, result);
+});
+
+test("printDiff", function() {
+    var result = diff("cat", "category");
+
+    assertEquals({added: 'egory', deleted: ''}, result);
+});
+
+test("lcs phrase", function() {
+    var common = lcs("the rain", "curse the");
+
+    assertEquals("the", common);
+});
