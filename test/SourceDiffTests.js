@@ -36,6 +36,12 @@ test("LCS with cs of length 4", function () {
     assertEquals("BCDG", cs);
 });
 
+test("LCS", function () {
+    var cs = lcs("XMJYAUZ", "MZJAWXU");
+
+    assertEquals("MJAU", cs);
+});
+
 test("Xml snippet 2", function () {
     var cs = lcs('<CATEGORY desc="Search Warrants Issued"><LINE>4</LINE></CATEGORY>', '<CATEGORY desc="Search Warrants"><LINE>5</LINE><NEW /></CATEGORY>');
 
