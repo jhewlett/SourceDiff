@@ -1,59 +1,5 @@
 module('main');
 
-test("LCS with empty strings", function () {
-    var cs = lcs("", "");
-
-    assertEquals("", cs);
-});
-
-test("LCS with empty string", function () {
-    var cs = lcs("a", "");
-
-    assertEquals("", cs);
-});
-
-test("LCS with identical strings", function () {
-    var cs = lcs("a", "a");
-
-    assertEquals("a", cs);
-});
-
-test("LCS with cs of length 1", function () {
-    var cs = lcs("a", "ab");
-
-    assertEquals("a", cs);
-});
-
-test("LCS with abde", function () {
-    var cs = lcs("abdef", "abdabde");
-
-    assertEquals("abde", cs);
-});
-
-test("LCS with BCDG", function () {
-    var cs = lcs("ABCDEFG", "BCDGK");
-
-    assertEquals("BCDG", cs);
-});
-
-test("LCS with MJAU", function () {
-    var cs = lcs("XMJYAUZ", "MZJAWXU");
-
-    assertEquals("MJAU", cs);
-});
-
-test("Xml snippet", function () {
-    var cs = lcs('<CATEGORY desc="Search Warrants Issued"><LINE>4</LINE></CATEGORY>', '<CATEGORY desc="Search Warrants"><LINE>5</LINE><NEW /></CATEGORY>');
-
-    assertEquals('<CATEGORY desc="Search Warrants"><LINE></LINE></CATEGORY>', cs);
-});
-
-test("lcs phrase", function() {
-    var common = lcs("the rain", "curse the");
-
-    assertEquals("the", common);
-});
-
 test("Trim trims any common prefixes", function() {
     var arr1 = ['cat', 'in', 'the', 'hat'];
     var arr2 = ['cat', 'in', 'the', 'bag'];

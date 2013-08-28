@@ -64,36 +64,15 @@ function fillMatrix(s1Lines, s2Lines, matrix) {
     }
 }
 
-function lcs(s1, s2) {
-    var matrix = createMatrix(s1, s2);
-
-    fillMatrix(s1, s2, matrix);
-
-    return backtrack(matrix, s1, s2, s1.length, s2.length);
-}
-
-function backtrack(matrix, s1, s2, i, j) {
-    if (i === 0 || j === 0) {
-        return "";
-    } else if(s1[i - 1] === s2[j - 1]) {
-        return backtrack(matrix, s1, s2, i - 1, j - 1) + s1[i - 1];
-    } else {
-        if (matrix[i][j - 1] > matrix[i - 1][j])
-            return backtrack(matrix, s1, s2, i, j - 1);
-        else
-            return backtrack(matrix, s1, s2, i - 1, j);
-    }
-}
-
 function trim(s1Lines, s2Lines) {
     while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[0] === s2Lines[0]) {
-        s1Lines.shift(); // = s1Lines.substring(1);
-        s2Lines.shift(); // = s2Lines.substring(1);
+        s1Lines.shift();
+        s2Lines.shift();
     }
 
     while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[s1Lines.length - 1] === s2Lines[s2Lines.length - 1]) {
-        s1Lines.pop();// = s1Lines.substring(0, s1Lines.length - 1);
-        s2Lines.pop();// = s2Lines.substring(0, s2Lines.length - 1);
+        s1Lines.pop();
+        s2Lines.pop();
     }
 }
 
