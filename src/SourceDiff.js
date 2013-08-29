@@ -18,14 +18,15 @@ function diff(s1, s2) {
     var s1Lines = s1.split('\n');    //todo: handle \r?
     var s2Lines = s2.split('\n');
 
-    trim(s1Lines, s2Lines);
+    var prefixLines = trim(s1Lines, s2Lines);
 
-    if (s1Lines.length === 1 && s1Lines[0].length === 0) {
-        return {added: [s2], deleted: []};
-    }
-    else if (s2Lines.length === 1 && s2Lines[0].length === 0) {
-        return {added: [], deleted: [s1]};
-    }
+    //this needs to return each line individually
+//    if (s1Lines.length === 1 && s1Lines[0].length === 0) {
+//        return {added: [s2], deleted: []};
+//    }
+//    else if (s2Lines.length === 1 && s2Lines[0].length === 0) {
+//        return {added: [], deleted: [s1]};
+//    }
 
     var matrix = createMatrix(s1Lines, s2Lines);
 
@@ -42,10 +43,14 @@ function diff(s1, s2) {
             i--;
             j--;
         } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
-            added.unshift(s2Lines[j - 1]);
+            if (s2Lines[j - 1].length > 0) {
+                added.unshift({line: prefixLines + j - 1, text: s2Lines[j - 1]});
+            }
             j--;
         } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
-            deleted.unshift(s1Lines[i - 1]);
+            if (s1Lines[i - 1].length > 0) {
+                deleted.unshift({line: prefixLines + i - 1, text: s1Lines[i - 1]});
+            }
             i--;
         }
     }
@@ -65,15 +70,18 @@ function fillMatrix(s1Lines, s2Lines, matrix) {
 }
 
 function trim(s1Lines, s2Lines) {
+    var prefixLines = 0;
+
     while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[0] === s2Lines[0]) {
         s1Lines.shift();
         s2Lines.shift();
+        prefixLines++;
     }
 
     while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[s1Lines.length - 1] === s2Lines[s2Lines.length - 1]) {
         s1Lines.pop();
         s2Lines.pop();
     }
+
+    return prefixLines;
 }
-
-
