@@ -5,15 +5,40 @@
     <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<table>
+    <tr>
+        <td width="50%">
+            Original: <br><br>
+            <textarea id="original">
+//a cool method
+void method(int a, int b)
+{
+   return 1 + 2;
+}
+            </textarea>
+        </td>
+        <td width="50%">
+            Edit: <br><br>
+            <textarea id="edited">
+void method(int a, int b)
+{
+   int c = a + b;
+   return 1 + 2;
+}
+            </textarea>
+        </td>
+    </tr>
+</table>
+<button onclick="doDiff()">Diff</button>
     <table>
         <tr>
             <td width="50%">
                 Original: <br><br>
-                <div id="deleted"></div>
+                <div id="original_result"></div>
             </td>
             <td width="50%">
                 Edit: <br><br>
-                <div id="added"></div>
+                <div id="edited_result"></div>
             </td>
         </tr>
     </table>
@@ -29,63 +54,68 @@
             return false;
         }
 
-        var text1 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
-                        ' &lt;LINE&gt;4&lt;/LINE&gt;\n' +
-                        ' &lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
-                        ' &lt;Total&gt;53&lt;/Total&gt;\n' +
-                    '&lt;/CATEGORY&gt;';
+//        var text1 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
+//                        ' &lt;LINE&gt;4&lt;/LINE&gt;\n' +
+//                        ' &lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
+//                        ' &lt;Total&gt;53&lt;/Total&gt;\n' +
+//                    '&lt;/CATEGORY&gt;';
 
-        var text2 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
-                        ' &lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
-                        ' &lt;SUBTOTAL&gt;20&lt;/SUBTOTAL&gt;\n' +
-                        ' &lt;Total&gt;50&lt;/Total&gt;\n' +
-                    '&lt;/CATEGORY&gt;';
+//        var text2 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
+        //                        ' &lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
+        //                        ' &lt;SUBTOTAL&gt;20&lt;/SUBTOTAL&gt;\n' +
+        //                        ' &lt;Total&gt;50&lt;/Total&gt;\n' +
+        //                    '&lt;/CATEGORY&gt;';
 
-        var results = diff(text1, text2);
+        function doDiff() {
+            var text1 = document.getElementById('original').value;
+            var text2 = document.getElementById('edited').value;
 
-        var text1Lines = text1.split('\n');
-        var text2Lines = text2.split('\n');
+            var results = diff(text1, text2);
 
-        var deletedText = "";
-        for(var i = 0; i < text1Lines.length; i++) {
-            if (contains(results.added, i - 1) && !contains(results.deleted, i - 1)) {
+            var text1Lines = text1.split('\n');
+            var text2Lines = text2.split('\n');
+
+            var deletedText = "";
+            for(var i = 0; i < text1Lines.length; i++) {
+                if (contains(results.added, i - 1) && !contains(results.deleted, i - 1)) {
+                    deletedText += "<br>";
+                }
+
+                deletedText += (i + 1) + ": &nbsp;";
+                if (contains(results.deleted, i)) {
+                    deletedText += '<span style="background-color: lightcoral;">';
+                }
+                deletedText += text1Lines[i];
+                if (contains(results.deleted, i)) {
+                    deletedText += '</span>';
+                }
                 deletedText += "<br>";
             }
 
-            deletedText += (i + 1) + ": &nbsp;";
-            if (contains(results.deleted, i)) {
-                deletedText += '<span style="background-color: lightcoral;">';
-            }
-            deletedText += text1Lines[i];
-            if (contains(results.deleted, i)) {
-                deletedText += '</span>';
-            }
-            deletedText += "<br>";
-        }
+            var addedText = "";
+            for(i = 0; i < text2Lines.length; i++) {
+                if (contains(results.deleted, i) && !contains(results.added, i)) {
+                    addedText += "<br>";
+                }
 
-        var addedText = "";
-        for(i = 0; i < text2Lines.length; i++) {
-            if (contains(results.deleted, i) && !contains(results.added, i)) {
+                addedText += (i + 1) + ": &nbsp;";
+
+                if (contains(results.added, i)) {
+                    addedText += '<span style="background-color: lightgreen;">';
+                }
+
+                addedText += text2Lines[i];
+
+                if (contains(results.added, i)) {
+                    addedText += '</span>';
+                }
+
                 addedText += "<br>";
             }
 
-            addedText += (i + 1) + ": &nbsp;";
-
-            if (contains(results.added, i)) {
-                addedText += '<span style="background-color: lightgreen;">';
-            }
-
-            addedText += text2Lines[i];
-
-            if (contains(results.added, i)) {
-                addedText += '</span>';
-            }
-
-            addedText += "<br>";
+            document.getElementById('original_result').innerHTML = deletedText;
+            document.getElementById('edited_result').innerHTML = addedText;
         }
-
-        document.getElementById('deleted').innerHTML = deletedText;
-        document.getElementById('added').innerHTML = addedText;
     </script>
 </body>
 </html>
