@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diff test</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td width="50%">
+                Deleted: <br>
+                <div id="deleted"></div>
+            </td>
+            <td width="50%">
+                Added: <br>
+                <div id="added"></div>
+            </td>
+        </tr>
+    </table>
+    <script src="SourceDiff.js">
+    </script>
+    <script>
+        var text1 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
+                        '&lt;LINE&gt;4&lt;/LINE&gt;\n' +
+                        '&lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
+                        '&lt;Total&gt;53&lt;/Total&gt;\n' +
+                    '&lt;/CATEGORY&gt;';
+
+        var text2 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
+                        '&lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
+                        '&lt;SUBTOTAL&gt;20&lt;/SUBTOTAL&gt;\n' +
+                        '&lt;Total&gt;50&lt;/Total&gt;\n' +
+                    '&lt;/CATEGORY&gt;';
+
+        var results = diff(text1, text2);
+
+        console.log(results);
+
+        var deletedText = "";
+        for(var i = 0; i < results.deleted.length; i++) {
+            deletedText += results.deleted[i].text + "<br>";
+        }
+
+        var addedText = "";
+        for(i = 0; i < results.added.length; i++) {
+            addedText += results.added[i].text + "<br>";
+        }
+
+        document.getElementById('deleted').innerHTML = deletedText;
+        document.getElementById('added').innerHTML = addedText;
+    </script>
+</body>
+</html>
