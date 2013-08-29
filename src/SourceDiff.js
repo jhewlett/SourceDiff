@@ -47,7 +47,7 @@ function diff(s1, s2) {
         }
     }
 
-    return {added: added, deleted: deleted, text1Lines: s1.split('\n'), text2Lines: s2.split('\n')};
+    return {added: added, deleted: deleted};
 }
 
 function fillMatrix(s1Lines, s2Lines, matrix) {
