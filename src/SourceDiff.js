@@ -20,14 +20,6 @@ function diff(s1, s2) {
 
     var prefixLines = trim(s1Lines, s2Lines);
 
-    //this needs to return each line individually
-//    if (s1Lines.length === 1 && s1Lines[0].length === 0) {
-//        return {added: [s2], deleted: []};
-//    }
-//    else if (s2Lines.length === 1 && s2Lines[0].length === 0) {
-//        return {added: [], deleted: [s1]};
-//    }
-
     var matrix = createMatrix(s1Lines, s2Lines);
 
     fillMatrix(s1Lines, s2Lines, matrix);
@@ -44,7 +36,7 @@ function diff(s1, s2) {
             j--;
         } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
             if (s2Lines[j - 1].length > 0) {
-                added.unshift({line: prefixLines + j - 1, text: s2Lines[j - 1]});
+                added.unshift({line: prefixLines + j - 1, text: s2Lines[j - 1]});   //todo: do I even need to store the text?
             }
             j--;
         } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
@@ -55,7 +47,7 @@ function diff(s1, s2) {
         }
     }
 
-    return {added: added, deleted: deleted};
+    return {added: added, deleted: deleted, text1Lines: s1.split('\n'), text2Lines: s2.split('\n')};
 }
 
 function fillMatrix(s1Lines, s2Lines, matrix) {

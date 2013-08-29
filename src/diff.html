@@ -7,11 +7,11 @@
     <table>
         <tr>
             <td width="50%">
-                Deleted: <br>
+                Original: <br><br>
                 <div id="deleted"></div>
             </td>
             <td width="50%">
-                Added: <br>
+                Edit: <br><br>
                 <div id="added"></div>
             </td>
         </tr>
@@ -19,6 +19,15 @@
     <script src="SourceDiff.js">
     </script>
     <script>
+        function contains(array, line) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].line === line) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         var text1 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
                         '&lt;LINE&gt;4&lt;/LINE&gt;\n' +
                         '&lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
@@ -33,16 +42,34 @@
 
         var results = diff(text1, text2);
 
-        console.log(results);
-
         var deletedText = "";
-        for(var i = 0; i < results.deleted.length; i++) {
-            deletedText += results.deleted[i].text + "<br>";
+        for(var i = 0; i < results.text1Lines.length; i++) {
+            deletedText += (i + 1) + ": &nbsp;";
+            if (contains(results.deleted, i)) {
+                deletedText += '<span style="background-color: lightcoral;">';
+            }
+            deletedText += results.text1Lines[i];
+            if (contains(results.deleted, i)) {
+                deletedText += '</span>';
+            }
+            deletedText += "<br>";
         }
 
         var addedText = "";
-        for(i = 0; i < results.added.length; i++) {
-            addedText += results.added[i].text + "<br>";
+        for(i = 0; i < results.text2Lines.length; i++) {
+            addedText += (i + 1) + ": &nbsp;";
+
+            if (contains(results.added, i)) {
+                addedText += '<span style="background-color: lightgreen;">';
+            }
+
+            addedText += results.text2Lines[i];
+
+            if (contains(results.added, i)) {
+                addedText += '</span>';
+            }
+
+            addedText += "<br>";
         }
 
         document.getElementById('deleted').innerHTML = deletedText;
