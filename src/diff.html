@@ -11,8 +11,10 @@
             Original: <br><br>
             <textarea id="original">
 //a cool method
+//with params
 void method(int a, int b)
 {
+   //return the answer
    return 1 + 2;
 }
             </textarea>
@@ -22,8 +24,9 @@ void method(int a, int b)
             <textarea id="edited">
 void method(int a, int b)
 {
-   int c = a + b;
    return 1 + 2;
+   //already
+   //returned
 }
             </textarea>
         </td>
@@ -34,11 +37,11 @@ void method(int a, int b)
         <tr>
             <td width="50%">
                 Original: <br><br>
-                <div id="original_result"></div>
+                <pre id="original_result"></pre>
             </td>
             <td width="50%">
                 Edit: <br><br>
-                <div id="edited_result"></div>
+                <pre id="edited_result"></pre>
             </td>
         </tr>
     </table>
@@ -54,18 +57,6 @@ void method(int a, int b)
             return false;
         }
 
-//        var text1 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
-//                        ' &lt;LINE&gt;4&lt;/LINE&gt;\n' +
-//                        ' &lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
-//                        ' &lt;Total&gt;53&lt;/Total&gt;\n' +
-//                    '&lt;/CATEGORY&gt;';
-
-//        var text2 = '&lt;CATEGORY desc="Search Warrants Issued"&gt;\n' +
-        //                        ' &lt;LINENUMBER&gt;908&lt;/LINENUMBER&gt;\n' +
-        //                        ' &lt;SUBTOTAL&gt;20&lt;/SUBTOTAL&gt;\n' +
-        //                        ' &lt;Total&gt;50&lt;/Total&gt;\n' +
-        //                    '&lt;/CATEGORY&gt;';
-
         function doDiff() {
             var text1 = document.getElementById('original').value;
             var text2 = document.getElementById('edited').value;
@@ -75,13 +66,30 @@ void method(int a, int b)
             var text1Lines = text1.split('\n');
             var text2Lines = text2.split('\n');
 
+            for (var c = 0; c < results.deleted.length; c++) {
+                if (c < text2Lines.length) {
+                    text2Lines.splice(results.deleted[c].line, 0, '');
+                    for(var e = 0; e < results.added.length; e++) {
+                        if (results.added[e].line >= results.deleted[c].line) {
+                            results.added[e].line++;
+                        }
+                    }
+                }
+            }
+
+            for (c = 0; c < results.added.length; c++) {
+                if (c < text1Lines.length) {
+                    text1Lines.splice(results.added[c].line, 0, '');
+                    for(var d = 0; d < results.deleted.length; d++) {
+                        if (results.deleted[d].line >= results.added[c].line) {
+                            results.deleted[d].line++;
+                        }
+                    }
+                }
+            }
+
             var deletedText = "";
             for(var i = 0; i < text1Lines.length; i++) {
-                if (contains(results.added, i - 1) && !contains(results.deleted, i - 1)) {
-                    deletedText += "<br>";
-                }
-
-                deletedText += (i + 1) + ": &nbsp;";
                 if (contains(results.deleted, i)) {
                     deletedText += '<span style="background-color: lightcoral;">';
                 }
@@ -94,12 +102,6 @@ void method(int a, int b)
 
             var addedText = "";
             for(i = 0; i < text2Lines.length; i++) {
-                if (contains(results.deleted, i) && !contains(results.added, i)) {
-                    addedText += "<br>";
-                }
-
-                addedText += (i + 1) + ": &nbsp;";
-
                 if (contains(results.added, i)) {
                     addedText += '<span style="background-color: lightgreen;">';
                 }
