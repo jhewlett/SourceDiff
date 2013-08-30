@@ -11,7 +11,6 @@
             Original: <br><br>
             <textarea id="original">
 //a cool method
-//with params
 void method(int a, int b)
 {
    //return the answer
@@ -22,6 +21,7 @@ void method(int a, int b)
         <td width="50%">
             Edit: <br><br>
             <textarea id="edited">
+//with params
 void method(int a, int b)
 {
    return 1 + 2;
@@ -67,7 +67,7 @@ void method(int a, int b)
             var text2Lines = text2.split('\n');
 
             for (var c = 0; c < results.deleted.length; c++) {
-                if (c < text2Lines.length) {
+                if (c < text2Lines.length && !contains(results.added, results.deleted[c].line)) {
                     text2Lines.splice(results.deleted[c].line, 0, '');
                     for(var e = 0; e < results.added.length; e++) {
                         if (results.added[e].line >= results.deleted[c].line) {
@@ -78,7 +78,7 @@ void method(int a, int b)
             }
 
             for (c = 0; c < results.added.length; c++) {
-                if (c < text1Lines.length) {
+                if (c < text1Lines.length && !contains(results.deleted, results.added[c].line)) {
                     text1Lines.splice(results.added[c].line, 0, '');
                     for(var d = 0; d < results.deleted.length; d++) {
                         if (results.deleted[d].line >= results.added[c].line) {
@@ -105,13 +105,10 @@ void method(int a, int b)
                 if (contains(results.added, i)) {
                     addedText += '<span style="background-color: lightgreen;">';
                 }
-
                 addedText += text2Lines[i];
-
                 if (contains(results.added, i)) {
                     addedText += '</span>';
                 }
-
                 addedText += "<br>";
             }
 
