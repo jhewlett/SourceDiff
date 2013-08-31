@@ -18,6 +18,18 @@ function diff(s1, s2) {
     var s1Lines = s1.split('\n');    //todo: handle \r?
     var s2Lines = s2.split('\n');
 
+    for (var l = 0; l < s1Lines.length; l++) {
+        if (s1Lines[l] == '') {
+            s1Lines[l] = ' ';
+        }
+    }
+
+    for (l = 0; l < s2Lines.length; l++) {
+        if (s2Lines[l] == '') {
+            s2Lines[l] = ' ';
+        }
+    }
+
     var prefixLines = trim(s1Lines, s2Lines);
 
     var matrix = createMatrix(s1Lines, s2Lines);

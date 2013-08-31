@@ -1,6 +1,39 @@
-td {
-    vertical-align: top;
-    width: 350px;
+body {
+    background-color: #FFFFFF;
+}
+
+#wrapper {
+    /*width: 1310px;*/
+    width: 100%;
+    height: 500px;
+}
+
+#left {
+    float: left;
+    /*width: 650px;*/
+    width: 49%;
+    height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+    /*margin-right: 10px;*/
+    margin-right: 2%;
+}
+
+#right {
+    float: right;
+    /*width: 650px;*/
+    width: 49%;
+    height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.inserted {
+    background-color: lightgreen;
+}
+
+.deleted {
+    background-color: lightcoral;
 }
 
 textarea {

@@ -8,7 +8,7 @@
 <table>
     <tr>
         <td width="50%">
-            Original: <br><br>
+            <h3>Original</h3>
             <textarea id="original">
 //a cool method
 void method(int a, int b)
@@ -19,7 +19,7 @@ void method(int a, int b)
             </textarea>
         </td>
         <td width="50%">
-            Edit: <br><br>
+            <h3>Edit</h3>
             <textarea id="edited">
 //with params
 void method(int a, int b)
@@ -33,88 +33,29 @@ void method(int a, int b)
     </tr>
 </table>
 <button onclick="doDiff()">Diff</button>
-    <table>
-        <tr>
-            <td width="50%">
-                Original: <br><br>
-                <pre id="original_result"></pre>
-            </td>
-            <td width="50%">
-                Edit: <br><br>
-                <pre id="edited_result"></pre>
-            </td>
-        </tr>
-    </table>
-    <script src="SourceDiff.js">
-    </script>
-    <script>
-        function contains(array, line) {
-            for (var i = 0; i < array.length; i++) {
-                if (array[i].line === line) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function doDiff() {
-            var text1 = document.getElementById('original').value;
-            var text2 = document.getElementById('edited').value;
-
-            var results = diff(text1, text2);
-
-            var text1Lines = text1.split('\n');
-            var text2Lines = text2.split('\n');
-
-            for (var c = 0; c < results.deleted.length; c++) {
-                if (c < text2Lines.length && !contains(results.added, results.deleted[c].line)) {
-                    text2Lines.splice(results.deleted[c].line, 0, '');
-                    for(var e = 0; e < results.added.length; e++) {
-                        if (results.added[e].line >= results.deleted[c].line) {
-                            results.added[e].line++;
-                        }
-                    }
-                }
-            }
-
-            for (c = 0; c < results.added.length; c++) {
-                if (c < text1Lines.length && !contains(results.deleted, results.added[c].line)) {
-                    text1Lines.splice(results.added[c].line, 0, '');
-                    for(var d = 0; d < results.deleted.length; d++) {
-                        if (results.deleted[d].line >= results.added[c].line) {
-                            results.deleted[d].line++;
-                        }
-                    }
-                }
-            }
-
-            var deletedText = "";
-            for(var i = 0; i < text1Lines.length; i++) {
-                if (contains(results.deleted, i)) {
-                    deletedText += '<span style="background-color: lightcoral;">';
-                }
-                deletedText += text1Lines[i];
-                if (contains(results.deleted, i)) {
-                    deletedText += '</span>';
-                }
-                deletedText += "<br>";
-            }
-
-            var addedText = "";
-            for(i = 0; i < text2Lines.length; i++) {
-                if (contains(results.added, i)) {
-                    addedText += '<span style="background-color: lightgreen;">';
-                }
-                addedText += text2Lines[i];
-                if (contains(results.added, i)) {
-                    addedText += '</span>';
-                }
-                addedText += "<br>";
-            }
-
-            document.getElementById('original_result').innerHTML = deletedText;
-            document.getElementById('edited_result').innerHTML = addedText;
-        }
-    </script>
+<div id="wrapper">
+    <div id="left">
+        <h3>Original</h3>
+        <pre id="original_result"></pre>
+    </div>
+    <div id="right">
+        <h3>Edit</h3>
+        <pre id="edited_result"></pre>
+    </div>
+</div>
+<script src="SourceDiff.js">
+</script>
+<script src="DiffPane.js"></script>
+<script src="../lib/jquery-2.0.3.min.js" ></script>
+<script>
+    $("#left").scroll(function () {
+        $("#right").scrollTop($("#left").scrollTop());
+        $("#right").scrollLeft($("#left").scrollLeft());
+    });
+    $("#right").scroll(function () {
+        $("#left").scrollTop($("#right").scrollTop());
+        $("#left").scrollLeft($("#right").scrollLeft());
+    });
+</script>
 </body>
 </html>
