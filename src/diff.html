@@ -32,11 +32,11 @@ void method(int a, int b)
 </div>
 <button onclick="doDiff()">Diff</button>
 <div class="wrapper">
-    <div class="left scroll">
+    <div class="left scroll" id="scrollLeft">
         <h3>Original</h3>
         <pre id="original_result"></pre>
     </div>
-    <div class="right scroll">
+    <div class="right scroll" id="scrollRight">
         <h3>Edit</h3>
         <pre id="edited_result"></pre>
     </div>
@@ -46,13 +46,13 @@ void method(int a, int b)
 <script src="DiffPane.js"></script>
 <script src="../lib/jquery-2.0.3.min.js" ></script>
 <script>
-    $("#left").scroll(function () {
-        $("#right").scrollTop($("#left").scrollTop());
-        $("#right").scrollLeft($("#left").scrollLeft());
+    $("#scrollLeft").scroll(function () {
+        $("#scrollRight").scrollTop($("#scrollLeft").scrollTop());
+        $("#scrollRight").scrollLeft($("#scrollLeft").scrollLeft());
     });
-    $("#right").scroll(function () {
-        $("#left").scrollTop($("#right").scrollTop());
-        $("#left").scrollLeft($("#right").scrollLeft());
+    $("#scrollRight").scroll(function () {
+        $("#scrollLeft").scrollTop($("#scrollRight").scrollTop());
+        $("#scrollLeft").scrollLeft($("#scrollRight").scrollLeft());
     });
 </script>
 </body>
