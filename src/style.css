@@ -2,30 +2,29 @@ body {
     background-color: #FFFFFF;
 }
 
-#wrapper {
-    /*width: 1310px;*/
-    width: 100%;
-    height: 500px;
+.text {
+    width: 50%;
 }
 
-#left {
+.wrapper {
+    width: 100%;
+}
+
+.left {
     float: left;
-    /*width: 650px;*/
     width: 49%;
-    height: 500px;
-    overflow-x: auto;
-    overflow-y: auto;
-    /*margin-right: 10px;*/
     margin-right: 2%;
 }
 
-#right {
-    float: right;
-    /*width: 650px;*/
-    width: 49%;
+.scroll {
     height: 500px;
     overflow-x: auto;
     overflow-y: auto;
+}
+
+.right {
+    float: right;
+    width: 49%;
 }
 
 .inserted {
@@ -37,7 +36,7 @@ body {
 }
 
 textarea {
-    width: 650px;
+    width: 100%;
     height: 200px;
 }
 

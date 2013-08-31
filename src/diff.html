@@ -5,22 +5,21 @@
     <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<table>
-    <tr>
-        <td width="50%">
-            <h3>Original</h3>
-            <textarea id="original">
+<div class="wrapper">
+    <div class="left">
+        <h3>Original</h3>
+        <textarea id="original">
 //a cool method
 void method(int a, int b)
 {
    //return the answer
    return 1 + 2;
 }
-            </textarea>
-        </td>
-        <td width="50%">
-            <h3>Edit</h3>
-            <textarea id="edited">
+        </textarea>
+    </div>
+    <div class="right">
+        <h3>Edit</h3>
+        <textarea id="edited">
 //with params
 void method(int a, int b)
 {
@@ -28,17 +27,16 @@ void method(int a, int b)
    //already
    //returned
 }
-            </textarea>
-        </td>
-    </tr>
-</table>
+        </textarea>
+    </div>
+</div>
 <button onclick="doDiff()">Diff</button>
-<div id="wrapper">
-    <div id="left">
+<div class="wrapper">
+    <div class="left scroll">
         <h3>Original</h3>
         <pre id="original_result"></pre>
     </div>
-    <div id="right">
+    <div class="right scroll">
         <h3>Edit</h3>
         <pre id="edited_result"></pre>
     </div>
