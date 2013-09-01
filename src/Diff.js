@@ -1,7 +1,7 @@
 var SourceDiff = SourceDiff || {};
 
 SourceDiff.Diff = function(ignoreLeadingWS) {
-    var _ignoreLeadingWS = ignoreLeadingWS
+    var _ignoreLeadingWS = ignoreLeadingWS;
 
     var trimWhiteSpace = function(str) {
         if (str) {
@@ -12,7 +12,7 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
             }
         }
         return str;
-    }
+    };
 
     var diff = function(s1, s2) {
         var s1Lines = s1.split('\n');    //todo: handle \r?
