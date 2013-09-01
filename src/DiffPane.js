@@ -14,31 +14,21 @@ function lineUpText(text1, text2, results) {
     padBlankLines(text1Lines);
     padBlankLines(text2Lines);
 
-    var text1Pos = 0;
-    var text2Pos = 0;
-
-    while(text1Pos < text1Lines.length && text2Pos < text2Lines.length) {
-        if (contains(results.deleted, text1Pos) && !contains(results.added, text2Pos)) {
-            text2Lines.splice(text2Pos, 0, '');
+    for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+        if (contains(results.deleted, i) && !contains(results.added, i)) {
+            text2Lines.splice(i, 0, '');
             for (var e = 0; e < results.added.length; e++) {
-                if (results.added[e].line >= text2Pos) {
+                if (results.added[e].line >= i) {
                     results.added[e].line++;
                 }
             }
-            text1Pos++;
-            text2Pos++;
-        } else if (!contains(results.deleted, text1Pos) && contains(results.added, text2Pos)) {
-            text1Lines.splice(text1Pos, 0, '');
+        } else if (!contains(results.deleted, i) && contains(results.added, i)) {
+            text1Lines.splice(i, 0, '');
             for (var d = 0; d < results.deleted.length; d++) {
-                if (results.deleted[d].line >= text1Pos) {
+                if (results.deleted[d].line >= i) {
                     results.deleted[d].line++;
                 }
             }
-            text1Pos++;
-            text2Pos++;
-        } else {
-            text1Pos++;
-            text2Pos++;
         }
     }
 
@@ -56,7 +46,7 @@ function doDiff() {
     var text1Lines = lines[0];
     var text2Lines = lines[1];
 
-    var deletedText = "";
+    var deletedText = '';
     for(var i = 0; i < text1Lines.length; i++) {
         if (contains(results.deleted, i)) {
             deletedText += '<span class="deleted">';
@@ -65,10 +55,10 @@ function doDiff() {
         if (contains(results.deleted, i)) {
             deletedText += '</span>';
         }
-        deletedText += "<br>";
+        deletedText += '<br>';
     }
 
-    var addedText = "";
+    var addedText = '';
     for(i = 0; i < text2Lines.length; i++) {
         if (contains(results.added, i)) {
             addedText += '<span class="inserted">';
