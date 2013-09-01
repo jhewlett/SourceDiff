@@ -4,7 +4,7 @@ test("add empty line for delete", function() {
     var text1 = 'delete\ncommon';
     var text2 = 'common';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var result = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -21,7 +21,7 @@ test("add and a delete on the same line does not add extra line", function() {
     var text1 = 'delete\ncommon';
     var text2 = 'insert\ncommon';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var result = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -36,7 +36,7 @@ test("insert adds an extra line to the left", function() {
     var text1 = 'common';
     var text2 = 'insert\ncommon';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var result = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -53,7 +53,7 @@ test("one delete, two inserts, adds line to left", function() {
     var text1 = 'delete\ncommon';
     var text2 = 'insert1\ninsert2\ncommon';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var result = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -71,7 +71,7 @@ test("three deletes, one insert, adds two lines to right", function() {
     var text1 = 'delete1\ndelete2\ndelete3\ncommon';
     var text2 = 'insert1\ncommon';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var result = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -90,7 +90,7 @@ test("three deletes, two inserts, adds one lines to right", function() {
     var text1 = 'delete1\ndelete2\ndelete3\ncommon';
     var text2 = 'insert1\ninsert2\ncommon';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var result = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -109,7 +109,7 @@ test("new blank line is considered an insert", function() {
     var text1 = 'common';
     var text2 = '\ncommon';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -128,7 +128,7 @@ test("deleted blank line is considered a delete", function() {
     var text1 = '\ncommon';
     var text2 = 'common';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
@@ -147,7 +147,7 @@ test("lined up correctly", function() {
     var text1 = 'a\nL1';
     var text2 = 'R1\na\nR2';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
     assertEquals([{line: 1, text: 'L1'}], results.deleted);
@@ -171,7 +171,7 @@ test("lined up correctly 2", function() {
     var text1 = 'L\ncommon';
     var text2 = 'common\nR';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
     assertEquals([{line: 0, text: 'L'}], results.deleted);
@@ -194,7 +194,7 @@ test("lined up correctly with two edit runs", function() {
     var text1 = 'L\ncommon\ncommon2\nL2';
     var text2 = 'common\nR\ncommon2';
 
-    var diff = new SourceDiff.Diff();
+    var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
     assertEquals([{line: 0, text: 'L'}, {line: 3, text: 'L2'}], results.deleted);

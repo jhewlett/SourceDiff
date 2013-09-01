@@ -1,6 +1,19 @@
 var SourceDiff = SourceDiff || {};
 
-SourceDiff.Diff = function() {
+SourceDiff.Diff = function(ignoreLeadingWS) {
+    var _ignoreLeadingWS = ignoreLeadingWS
+
+    var trimWhiteSpace = function(str) {
+        if (str) {
+            str = str.replace(/\s\s*$/, '');
+
+            if (_ignoreLeadingWS) {
+                str = str.replace(/^\s\s*/, '');
+            }
+        }
+        return str;
+    }
+
     var diff = function(s1, s2) {
         var s1Lines = s1.split('\n');    //todo: handle \r?
         var s2Lines = s2.split('\n');
@@ -21,7 +34,7 @@ SourceDiff.Diff = function() {
         var deleted = [];
 
         while (i >= 0 && j >= 0) {
-            if (s1Lines[i - 1] === s2Lines[j - 1]) {
+            if (trimWhiteSpace(s1Lines[i - 1]) === trimWhiteSpace(s2Lines[j - 1])) {
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
