@@ -11,40 +11,34 @@ function lineUpText(text1, text2, results) {
     var text1Lines = text1.split('\n');
     var text2Lines = text2.split('\n');
 
-    //todo: why is this needed?
-//    for (var l = 0; l < text1Lines.length; l++) {
-//        if (text1Lines[l] == '') {
-//            text1Lines[l] = ' ';
-//        }
-//    }
-//
-//    for (l = 0; l < text2Lines.length; l++) {
-//        if (text2Lines[l] == '') {
-//            text2Lines[l] = ' ';
-//        }
-//    }
+    padBlankLines(text1Lines);
+    padBlankLines(text2Lines);
 
-    for (var c = 0; c < results.deleted.length; c++) {
-        var line = results.deleted[c].line;
-        if (line < text2Lines.length && !contains(results.added, line)) {
-            text2Lines.splice(line, 0, '');
-            for(var e = 0; e < results.added.length; e++) {
-                if (results.added[e].line >= line) {
+    var text1Pos = 0;
+    var text2Pos = 0;
+
+    while(text1Pos < text1Lines.length && text2Pos < text2Lines.length) {
+        if (contains(results.deleted, text1Pos) && !contains(results.added, text2Pos)) {
+            text2Lines.splice(text2Pos, 0, '');
+            for (var e = 0; e < results.added.length; e++) {
+                if (results.added[e].line >= text2Pos) {
                     results.added[e].line++;
                 }
             }
-        }
-    }
-//
-    for (c = 0; c < results.added.length; c++) {
-        line = results.added[c].line;
-        if (line < text1Lines.length && !contains(results.deleted, line)) {
-            text1Lines.splice(line, 0, '');
-            for(var d = 0; d < results.deleted.length; d++) {
-                if (results.deleted[d].line >= line) {
+            text1Pos++;
+            text2Pos++;
+        } else if (!contains(results.deleted, text1Pos) && contains(results.added, text2Pos)) {
+            text1Lines.splice(text1Pos, 0, '');
+            for (var d = 0; d < results.deleted.length; d++) {
+                if (results.deleted[d].line >= text1Pos) {
                     results.deleted[d].line++;
                 }
             }
+            text1Pos++;
+            text2Pos++;
+        } else {
+            text1Pos++;
+            text2Pos++;
         }
     }
 
