@@ -7,6 +7,14 @@ function contains(array, line) {
     return false;
 }
 
+function updateLineNumbers(array, startPos) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].line >= startPos) {
+            array[i].line++;
+        }
+    }
+}
+
 function lineUpText(text1, text2, results) {
     var text1Lines = text1.split('\n');
     var text2Lines = text2.split('\n');
@@ -17,18 +25,10 @@ function lineUpText(text1, text2, results) {
     for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
         if (contains(results.deleted, i) && !contains(results.added, i)) {
             text2Lines.splice(i, 0, '');
-            for (var e = 0; e < results.added.length; e++) {
-                if (results.added[e].line >= i) {
-                    results.added[e].line++;
-                }
-            }
+            updateLineNumbers(results.added, i);
         } else if (!contains(results.deleted, i) && contains(results.added, i)) {
             text1Lines.splice(i, 0, '');
-            for (var d = 0; d < results.deleted.length; d++) {
-                if (results.deleted[d].line >= i) {
-                    results.deleted[d].line++;
-                }
-            }
+            updateLineNumbers(results.deleted, i);
         }
     }
 
