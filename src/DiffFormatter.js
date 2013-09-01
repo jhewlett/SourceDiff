@@ -69,6 +69,23 @@ SourceDiff.DiffFormatter = function(diff) {
         return Math.min(lines.length, lastEdit + 10);
     };
 
+    var formatLines = function (startingPos, endingPos, modifiedPositions, lines, className) {
+        var formattedText = '';
+
+        for (var i = startingPos; i < endingPos; i++) {
+            if (contains(modifiedPositions, i)) {
+                formattedText += '<span class="' + className + '">';
+            }
+            formattedText += escapeHtml(lines[i]).replace(/\t/g, '   ');
+            if (contains(modifiedPositions, i)) {
+                formattedText += '</span>';
+            }
+            formattedText += '<br>';
+        }
+
+        return formattedText;
+    };
+
     var doDiff = function() {
         var text1 = document.getElementById('original').value;
         var text2 = document.getElementById('edited').value;
@@ -84,29 +101,8 @@ SourceDiff.DiffFormatter = function(diff) {
         var text1EndingPos = getEndingPos(results, text1Lines);
         var text2EndingPos = getEndingPos(results, text2Lines);
 
-        var deletedText = '';
-        for(var i = startingPos; i < text1EndingPos; i++) {
-            if (contains(results.deleted, i)) {
-                deletedText += '<span class="deleted">';
-            }
-            deletedText += escapeHtml(text1Lines[i]).replace(/\t/g, '   ');
-            if (contains(results.deleted, i)) {
-                deletedText += '</span>';
-            }
-            deletedText += '<br>';
-        }
-
-        var addedText = '';
-        for(i = startingPos; i < text2EndingPos; i++) {
-            if (contains(results.added, i)) {
-                addedText += '<span class="inserted">';
-            }
-            addedText += escapeHtml(text2Lines[i]).replace(/\t/g, '   ');
-            if (contains(results.added, i)) {
-                addedText += '</span>';
-            }
-            addedText += "<br>";
-        }
+        var deletedText = formatLines(startingPos, text1EndingPos, results.deleted, text1Lines, 'deleted');
+        var addedText = formatLines(startingPos, text2EndingPos, results.added, text2Lines, 'inserted');
 
         document.getElementById('original_result').innerHTML = deletedText;
         document.getElementById('edited_result').innerHTML = addedText;
