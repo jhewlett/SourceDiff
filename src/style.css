@@ -35,6 +35,14 @@ body {
     background-color: lightcoral;
 }
 
+.modified {
+    background-color: #f6ff76;
+}
+
+.padding {
+    background-color: lightgray;
+}
+
 textarea {
     width: 100%;
     height: 200px;

@@ -29,10 +29,10 @@ SourceDiff.DiffFormatter = function(diff) {
 
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
             if (contains(results.deleted, i) && !contains(results.added, i)) {
-                text2Lines.splice(i, 0, '');
+                text2Lines.splice(i, 0, '<span class="padding"> </span>');
                 updateLineNumbers(results.added, i);
             } else if (!contains(results.deleted, i) && contains(results.added, i)) {
-                text1Lines.splice(i, 0, '');
+                text1Lines.splice(i, 0, '<span class="padding"> </span>');
                 updateLineNumbers(results.deleted, i);
             }
         }
@@ -68,37 +68,70 @@ SourceDiff.DiffFormatter = function(diff) {
         return Math.min(lines.length, lastEdit + 10);
     };
 
-    var formatLines = function (startingPos, endingPos, modifiedPositions, lines, className) {
-        var formattedText = '';
+    var formatLeftText = function (results, modified, text1Lines) {
+        var deletedText = '';
 
-        for (var i = startingPos; i < endingPos; i++) {
-            if (contains(modifiedPositions, i)) {
-                formattedText += '<span class="' + className + '">';
+        var startingPos = getStartingPos(results);
+        var text1EndingPos = getEndingPos(results, text1Lines);
+
+        for (var i = startingPos; i < text1EndingPos; i++) {
+            if (contains(results.deleted, i)) {
+                var className = 'deleted';
+                if (contains(results.added, i) || contains(modified, i - 1)) {
+                    modified.push({line: i});
+                    className = 'modified';
+                }
+                deletedText += '<span class="' + className + '">';
             }
-            formattedText += escapeHtml(lines[i]).replace(/\t/g, '   ');
-            if (contains(modifiedPositions, i)) {
-                formattedText += '</span>';
+            deletedText += text1Lines[i].replace(/\t/g, '   ');
+            if (contains(results.deleted, i)) {
+                deletedText += '</span>';
             }
-            formattedText += '<br>';
+            deletedText += '<br>';
         }
+        return deletedText;
+    };
 
-        return formattedText;
+    var formatRightText = function (results, modified, text2Lines) {
+        var addedText = '';
+
+        var startingPos = getStartingPos(results);
+        var text2EndingPos = getEndingPos(results, text2Lines);
+
+        for (var i = startingPos; i < text2EndingPos; i++) {
+            if (contains(results.added, i)) {
+                var className = 'inserted';
+                if (contains(results.deleted, i) || contains(modified, i - 1)) {
+                    className = 'modified';
+                    if (!contains(modified, i)) {
+                        modified.push({line: i});
+                    }
+                }
+                addedText += '<span class="' + className + '">';
+            }
+            addedText += text2Lines[i].replace(/\t/g, '   ');
+            if (contains(results.added, i)) {
+                addedText += '</span>';
+            }
+            addedText += '<br>';
+        }
+        return addedText;
     };
 
     var doDiff = function(text1, text2) {
         var results = _diff.diff(text1, text2);
+
+        text1 = escapeHtml(text1);
+        text2 = escapeHtml(text2);
 
         var lines = lineUpText(text1, text2, results);
 
         var text1Lines = lines[0];
         var text2Lines = lines[1];
 
-        var startingPos = getStartingPos(results);
-        var text1EndingPos = getEndingPos(results, text1Lines);
-        var text2EndingPos = getEndingPos(results, text2Lines);
-
-        var deletedText = formatLines(startingPos, text1EndingPos, results.deleted, text1Lines, 'deleted');
-        var addedText = formatLines(startingPos, text2EndingPos, results.added, text2Lines, 'inserted');
+        var modified = [];
+        var deletedText = formatLeftText(results, modified, text1Lines);
+        var addedText = formatRightText(results, modified, text2Lines);
 
         return [deletedText, addedText];
     };
