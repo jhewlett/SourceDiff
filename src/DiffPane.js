@@ -19,8 +19,10 @@ function lineUpText(text1, text2, results) {
     var text1Lines = text1.split('\n');
     var text2Lines = text2.split('\n');
 
-    padBlankLines(text1Lines);
-    padBlankLines(text2Lines);
+    var diff = new SourceDiff.Diff();
+
+    diff.padBlankLines(text1Lines);
+    diff.padBlankLines(text2Lines);
 
     for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
         if (contains(results.deleted, i) && !contains(results.added, i)) {
@@ -68,7 +70,9 @@ function doDiff() {
     var text1 = document.getElementById('original').value;
     var text2 = document.getElementById('edited').value;
 
-    var results = diff(text1, text2);
+    var diff = new SourceDiff.Diff();
+
+    var results = diff.diff(text1, text2);
 
     var lines = lineUpText(text1, text2, results);
 
