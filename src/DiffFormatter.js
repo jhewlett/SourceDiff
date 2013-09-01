@@ -51,8 +51,7 @@ SourceDiff.DiffFormatter = function(diff) {
 
         var firstEdit = Math.min(firstDelete, firstAdd);
 
-        var startingPos = Math.max(0, firstEdit - 10);
-        return startingPos;
+        return Math.max(0, firstEdit - 10);
     };
 
     var getEndingPos = function(results, lines) {
@@ -86,10 +85,7 @@ SourceDiff.DiffFormatter = function(diff) {
         return formattedText;
     };
 
-    var doDiff = function() {
-        var text1 = document.getElementById('original').value;
-        var text2 = document.getElementById('edited').value;
-
+    var doDiff = function(text1, text2) {
         var results = _diff.diff(text1, text2);
 
         var lines = lineUpText(text1, text2, results);
@@ -104,8 +100,7 @@ SourceDiff.DiffFormatter = function(diff) {
         var deletedText = formatLines(startingPos, text1EndingPos, results.deleted, text1Lines, 'deleted');
         var addedText = formatLines(startingPos, text2EndingPos, results.added, text2Lines, 'inserted');
 
-        document.getElementById('original_result').innerHTML = deletedText;
-        document.getElementById('edited_result').innerHTML = addedText;
+        return [deletedText, addedText];
     };
 
     var escapeHtml = function(string) {

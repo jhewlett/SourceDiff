@@ -46,20 +46,29 @@ void method(int a, int b)
 <script src="DiffFormatter.js"></script>
 <script src="../lib/jquery-2.0.3.min.js" ></script>
 <script>
-    $("#scrollLeft").scroll(function () {
-        $("#scrollRight").scrollTop($("#scrollLeft").scrollTop());
-        $("#scrollRight").scrollLeft($("#scrollLeft").scrollLeft());
+    var scrollLeft = $('#scrollLeft');
+    var scrollRight = $('#scrollRight');
+
+    scrollLeft.scroll(function () {
+        scrollRight.scrollTop(scrollLeft.scrollTop());
+        scrollRight.scrollLeft(scrollLeft.scrollLeft());
     });
-    $("#scrollRight").scroll(function () {
-        $("#scrollLeft").scrollTop($("#scrollRight").scrollTop());
-        $("#scrollLeft").scrollLeft($("#scrollRight").scrollLeft());
+    scrollRight.scroll(function () {
+        scrollLeft.scrollTop(scrollRight.scrollTop());
+        scrollLeft.scrollLeft(scrollRight.scrollLeft());
     });
 
     function doDiff() {
         var diff = new SourceDiff.Diff();
         var formatter = new SourceDiff.DiffFormatter(diff);
 
-        formatter.doDiff();
+        var text1 = document.getElementById('original').value;
+        var text2 = document.getElementById('edited').value;
+
+        var results = formatter.doDiff(text1, text2);
+
+        document.getElementById('original_result').innerHTML = results[0];
+        document.getElementById('edited_result').innerHTML = results[1];
     }
 </script>
 </body>
