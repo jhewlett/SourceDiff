@@ -1,8 +1,8 @@
 load:
   - qunit-lib/equiv.js
   - qunit-lib/QUnitAdapter.js
-  - src/SourceDiff.js
-  - src/DiffPane.js
+  - src/Diff.js
+  - src/DiffFormatter.js
 
 test:
   - test/*.js

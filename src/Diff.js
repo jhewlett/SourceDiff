@@ -96,7 +96,7 @@ SourceDiff.Diff = function() {
 
     return {
         diff: diff,
-        trim: trim,
-        padBlankLines: padBlankLines
+        trim: trim,   //exposed for testing
+        padBlankLines: padBlankLines       //used by DiffFormatter
     };
 };
