@@ -29,18 +29,26 @@ body {
 
 .inserted {
     background-color: lightgreen;
+    min-width: 100%;
+    display: inline-block;
 }
 
 .deleted {
     background-color: lightcoral;
+    min-width: 100%;
+    display: inline-block;
 }
 
 .modified {
     background-color: #f6ff76;
+    min-width: 100%;
+    display: inline-block;
 }
 
 .padding {
     background-color: lightgray;
+    min-width: 100%;
+    display: inline-block;
 }
 
 textarea {

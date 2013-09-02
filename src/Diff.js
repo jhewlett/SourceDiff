@@ -80,12 +80,12 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     };
 
     var padBlankLines = function(lines) {
-        if (lines.length == 1 && lines[0] == '') {
+        if (lines.length === 1 && lines[0] === '') {
             return;
         }
 
         for (var l = 0; l < lines.length; l++) {
-            if (lines[l] == '') {
+            if (lines[l] === '') {
                 lines[l] = ' ';
             }
         }

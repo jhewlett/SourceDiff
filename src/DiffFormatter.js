@@ -29,10 +29,10 @@ SourceDiff.DiffFormatter = function(diff) {
 
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
             if (contains(results.deleted, i) && !contains(results.added, i)) {
-                text2Lines.splice(i, 0, '<span class="padding"> </span>');
+                text2Lines.splice(i, 0, '<span class="padding"></span>');
                 updateLineNumbers(results.added, i);
             } else if (!contains(results.deleted, i) && contains(results.added, i)) {
-                text1Lines.splice(i, 0, '<span class="padding"> </span>');
+                text1Lines.splice(i, 0, '<span class="padding"></span>');
                 updateLineNumbers(results.deleted, i);
             }
         }
