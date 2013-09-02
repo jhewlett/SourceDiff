@@ -79,7 +79,7 @@ SourceDiff.DiffFormatter = function(diff) {
         results.paddingLeft = [];
         results.paddingRight = [];
 
-        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+        for (var i = 0; i < Math.max(text1Lines.length, text2Lines.length); i++) {
             if (!contains(results.deleted, i) && contains(results.added, i)) {
                 text1Lines.splice(i, 0, ' ');
                 updateLineNumbers(results.deleted, i);

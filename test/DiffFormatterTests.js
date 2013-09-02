@@ -181,10 +181,11 @@ test("lined up correctly 2", function() {
 
     var lines = formatter.lineUpText(text1, text2, results);
 
-    assertEquals(2, lines[0].length);
+    assertEquals(3, lines[0].length);
     assertEquals(3, lines[1].length);
     assertEquals('L', lines[0][0]);
     assertEquals('common', lines[0][1]);
+    assertEquals(' ', lines[0][2]);
     assertEquals(' ', lines[1][0]);
     assertEquals('common', lines[1][1]);
     assertEquals('R', lines[1][2]);
@@ -205,7 +206,7 @@ test("lined up correctly with two edit runs", function() {
     var lines = formatter.lineUpText(text1, text2, results);
 
     assertEquals(5, lines[0].length);
-    assertEquals(4, lines[1].length);
+    assertEquals(5, lines[1].length);
     assertEquals('L', lines[0][0]);
     assertEquals('common', lines[0][1]);
     assertEquals(' ', lines[0][2]);
@@ -215,4 +216,26 @@ test("lined up correctly with two edit runs", function() {
     assertEquals('common', lines[1][1]);
     assertEquals('R', lines[1][2]);
     assertEquals('common2', lines[1][3]);
+    assertEquals(' ', lines[1][4]);
+});
+
+test("Padding is added bug", function() {
+    var text1 = ' ';
+    var text2 = '\n';
+
+    var diff = new SourceDiff.Diff(true);
+    var results = diff.diff(text1, text2);
+
+    assertEquals([{line: 1, text: ' '}], results.added);
+
+    var formatter = new SourceDiff.DiffFormatter(diff);
+
+    var lines = formatter.lineUpText(text1, text2, results);
+
+    assertEquals(2, lines[0].length);
+    assertEquals(2, lines[1].length);
+    assertEquals(' ', lines[0][0]);
+    assertEquals(' ', lines[0][1]);
+    assertEquals(' ', lines[1][0]);
+    assertEquals(' ', lines[1][1]);
 });
