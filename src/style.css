@@ -28,19 +28,19 @@ body {
 }
 
 .inserted {
-    background-color: lightgreen;
+    background-color: #9E9;
     min-width: 100%;
     display: inline-block;
 }
 
 .deleted {
-    background-color: lightcoral;
+    background-color: #E99;
     min-width: 100%;
     display: inline-block;
 }
 
 .modified {
-    background-color: #f6ff76;
+    background-color: #FD8;
     min-width: 100%;
     display: inline-block;
 }
