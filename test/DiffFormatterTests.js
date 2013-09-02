@@ -13,7 +13,7 @@ test("add empty line for delete", function() {
 
     assertEquals(2, lines[0].length);
     assertEquals(2, lines[1].length);
-    assertEquals('', lines[1][0]);
+    assertEquals('<span class="padding"> </span>', lines[1][0]);
     assertEquals('common', lines[1][1]);
 });
 
@@ -45,7 +45,7 @@ test("insert adds an extra line to the left", function() {
 
     assertEquals(2, lines[0].length);
     assertEquals(2, lines[1].length);
-    assertEquals('', lines[0][0]);
+    assertEquals('<span class="padding"> </span>', lines[0][0]);
     assertEquals('common', lines[0][1]);
 });
 
@@ -63,7 +63,7 @@ test("one delete, two inserts, adds line to left", function() {
     assertEquals(3, lines[0].length);
     assertEquals(3, lines[1].length);
     assertEquals('delete', lines[0][0]);
-    assertEquals('', lines[0][1]);
+    assertEquals('<span class="padding"> </span>', lines[0][1]);
     assertEquals('common', lines[0][2]);
 });
 
@@ -81,8 +81,8 @@ test("three deletes, one insert, adds two lines to right", function() {
     assertEquals(4, lines[0].length);
     assertEquals(4, lines[1].length);
     assertEquals('insert1', lines[1][0]);
-    assertEquals('', lines[1][1]);
-    assertEquals('', lines[1][2]);
+    assertEquals('<span class="padding"> </span>', lines[1][1]);
+    assertEquals('<span class="padding"> </span>', lines[1][2]);
     assertEquals('common', lines[1][3]);
 });
 
@@ -101,7 +101,7 @@ test("three deletes, two inserts, adds one lines to right", function() {
     assertEquals(4, lines[1].length);
     assertEquals('insert1', lines[1][0]);
     assertEquals('insert2', lines[1][1]);
-    assertEquals('', lines[1][2]);
+    assertEquals('<span class="padding"> </span>', lines[1][2]);
     assertEquals('common', lines[1][3]);
 });
 
@@ -118,7 +118,7 @@ test("new blank line is considered an insert", function() {
 
     assertEquals(2, lines[0].length);
     assertEquals(2, lines[1].length);
-    assertEquals('', lines[0][0]);
+    assertEquals('<span class="padding"> </span>', lines[0][0]);
     assertEquals('common', lines[0][1]);
     assertEquals(' ', lines[1][0]);
     assertEquals('common', lines[1][1]);
@@ -139,7 +139,7 @@ test("deleted blank line is considered a delete", function() {
     assertEquals(2, lines[1].length);
     assertEquals(' ', lines[0][0]);
     assertEquals('common', lines[0][1]);
-    assertEquals('', lines[1][0]);
+    assertEquals('<span class="padding"> </span>', lines[1][0]);
     assertEquals('common', lines[1][1]);
 });
 
@@ -159,7 +159,7 @@ test("lined up correctly", function() {
 
     assertEquals(3, lines[0].length);
     assertEquals(3, lines[1].length);
-    assertEquals('', lines[0][0]);
+    assertEquals('<span class="padding"> </span>', lines[0][0]);
     assertEquals('a', lines[0][1]);
     assertEquals('L1', lines[0][2]);
     assertEquals('R1', lines[1][0]);
@@ -185,7 +185,7 @@ test("lined up correctly 2", function() {
     assertEquals(3, lines[1].length);
     assertEquals('L', lines[0][0]);
     assertEquals('common', lines[0][1]);
-    assertEquals('', lines[1][0]);
+    assertEquals('<span class="padding"> </span>', lines[1][0]);
     assertEquals('common', lines[1][1]);
     assertEquals('R', lines[1][2]);
 });
@@ -208,10 +208,10 @@ test("lined up correctly with two edit runs", function() {
     assertEquals(4, lines[1].length);
     assertEquals('L', lines[0][0]);
     assertEquals('common', lines[0][1]);
-    assertEquals('', lines[0][2]);
+    assertEquals('<span class="padding"> </span>', lines[0][2]);
     assertEquals('common2', lines[0][3]);
     assertEquals('L2', lines[0][4]);
-    assertEquals('', lines[1][0]);
+    assertEquals('<span class="padding"> </span>', lines[1][0]);
     assertEquals('common', lines[1][1]);
     assertEquals('R', lines[1][2]);
     assertEquals('common2', lines[1][3]);
