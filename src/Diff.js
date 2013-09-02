@@ -70,10 +70,11 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     var fillMatrix = function(s1Lines, s2Lines, matrix) {
         for (var i = 1; i <= s1Lines.length; i++) {
             for (var j = 1; j <= s2Lines.length; j++) {
-                if (s1Lines[i - 1] === s2Lines[j - 1])
+                if (s1Lines[i - 1] === s2Lines[j - 1]) {
                     matrix[i][j] = matrix[i - 1][j - 1] + 1;
-                else
+                } else {
                     matrix[i][j] = Math.max(matrix[i][j - 1], matrix[i - 1][j]);
+                }
             }
         }
     };
