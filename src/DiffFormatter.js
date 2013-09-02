@@ -3,6 +3,55 @@ var SourceDiff = SourceDiff || {};
 SourceDiff.DiffFormatter = function(diff) {
     var _diff = diff;
 
+    var formattedDiff = function(text1, text2) {
+        var results = _diff.diff(text1, text2);
+
+        text1 = escapeHtml(text1);
+        text2 = escapeHtml(text2);
+
+        var lines = lineUpText(text1, text2, results);
+
+        var text1Lines = lines[0];
+        var text2Lines = lines[1];
+
+        findModifiedLines(text1Lines, text2Lines, results);
+
+        var deletedText = formatLeftText(results, text1Lines);
+        var addedText = formatRightText(results, text2Lines);
+
+        return [deletedText, addedText];
+    };
+
+    var escapeHtml = function(string) {
+        var entityMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;'
+        };
+
+        return String(string).replace(/[&<>"'\/]/g, function (s) {
+            return entityMap[s];
+        });
+    };
+
+    var findModifiedLines = function(text1Lines, text2Lines, results) {
+        results.modifiedRight = [];
+        results.modifiedLeft = [];
+        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+            if (contains(results.added, i) && contains(results.deleted, i)) {
+                results.modifiedLeft.push({line: i});
+                results.modifiedRight.push({line: i});
+            } else if (contains(results.added, i) && contains(results.modifiedRight, i - 1)) {
+                results.modifiedRight.push({line: i});
+            } else if (contains(results.deleted, i) && contains(results.modifiedLeft, i - 1)) {
+                results.modifiedLeft.push({line: i});
+            }
+        }
+    };
+
     var contains = function(array, line) {
         for (var i = 0; i < array.length; i++) {
             if (array[i].line === line) {
@@ -27,17 +76,49 @@ SourceDiff.DiffFormatter = function(diff) {
         _diff.padBlankLines(text1Lines);
         _diff.padBlankLines(text2Lines);
 
+        results.paddingLeft = [];
+        results.paddingRight = [];
+
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (contains(results.deleted, i) && !contains(results.added, i)) {
-                text2Lines.splice(i, 0, '<span class="padding"></span>');
-                updateLineNumbers(results.added, i);
-            } else if (!contains(results.deleted, i) && contains(results.added, i)) {
-                text1Lines.splice(i, 0, '<span class="padding"></span>');
+            if (!contains(results.deleted, i) && contains(results.added, i)) {
+                text1Lines.splice(i, 0, ' ');
                 updateLineNumbers(results.deleted, i);
+                results.paddingLeft.push({line: i});
+            } else if (contains(results.deleted, i) && !contains(results.added, i)) {
+                text2Lines.splice(i, 0, ' ');
+                updateLineNumbers(results.added, i);
+                results.paddingRight.push({line: i});
             }
         }
 
         return [text1Lines, text2Lines];
+    };
+
+    var formatLeftText = function (results, text1Lines) {
+        var deletedText = '';
+
+        var startingPos = getStartingPos(results);
+        var text1EndingPos = getEndingPos(results, text1Lines);
+
+        for (var i = startingPos; i < text1EndingPos; i++) {
+            var className = getClassNameLeft(results, i);
+            deletedText += appendLine(className, text1Lines[i]);
+        }
+
+        return deletedText;
+    };
+
+    var formatRightText = function (results, text2Lines) {
+        var addedText = '';
+
+        var startingPos = getStartingPos(results);
+        var text2EndingPos = getEndingPos(results, text2Lines);
+
+        for (var i = startingPos; i < text2EndingPos; i++) {
+            var className = getClassNameRight(results, i);
+            addedText += appendLine(className, text2Lines[i]);
+        }
+        return addedText;
     };
 
     var getStartingPos = function(results) {
@@ -68,91 +149,48 @@ SourceDiff.DiffFormatter = function(diff) {
         return Math.min(lines.length, lastEdit + 10);
     };
 
-    var formatLeftText = function (results, modified, text1Lines) {
-        var deletedText = '';
-
-        var startingPos = getStartingPos(results);
-        var text1EndingPos = getEndingPos(results, text1Lines);
-
-        for (var i = startingPos; i < text1EndingPos; i++) {
-            if (contains(results.deleted, i)) {
-                var className = 'deleted';
-                if (contains(results.added, i) || contains(modified, i - 1)) {
-                    modified.push({line: i});
-                    className = 'modified';
-                }
-                deletedText += '<span class="' + className + '">';
-            }
-            deletedText += text1Lines[i].replace(/\t/g, '   ');
-            if (contains(results.deleted, i)) {
-                deletedText += '</span>';
-            }
-            deletedText += '<br>';
+    var getClassNameLeft = function (results, i) {
+        var className = '';
+        if (contains(results.modifiedLeft, i)) {
+            className = 'modified';
+        } else if (contains(results.paddingLeft, i)) {
+            className = 'padding';
+        } else if (contains(results.deleted, i)) {
+            className = 'deleted';
         }
-        return deletedText;
+        return className;
     };
 
-    var formatRightText = function (results, modified, text2Lines) {
-        var addedText = '';
-
-        var startingPos = getStartingPos(results);
-        var text2EndingPos = getEndingPos(results, text2Lines);
-
-        for (var i = startingPos; i < text2EndingPos; i++) {
-            if (contains(results.added, i)) {
-                var className = 'inserted';
-                if (contains(results.deleted, i) || contains(modified, i - 1)) {
-                    className = 'modified';
-                    if (!contains(modified, i)) {
-                        modified.push({line: i});
-                    }
-                }
-                addedText += '<span class="' + className + '">';
-            }
-            addedText += text2Lines[i].replace(/\t/g, '   ');
-            if (contains(results.added, i)) {
-                addedText += '</span>';
-            }
-            addedText += '<br>';
+    var getClassNameRight = function (results, i) {
+        var className = '';
+        if (contains(results.modifiedRight, i)) {
+            className = 'modified';
+        } else if (contains(results.paddingRight, i)) {
+            className = 'padding';
+        } else if (contains(results.added, i)) {
+            className = 'inserted';
         }
-        return addedText;
+        return className;
     };
 
-    var doDiff = function(text1, text2) {
-        var results = _diff.diff(text1, text2);
+    var appendLine = function(className, line) {
+        var append = '';
 
-        text1 = escapeHtml(text1);
-        text2 = escapeHtml(text2);
+        if (className != '') {
+            append += '<span class="' + className + '">';
+        }
+        append += line.replace(/\t/g, '   ');
+        if (className != '') {
+            append += '</span>';
+        }
 
-        var lines = lineUpText(text1, text2, results);
+        append += '<br>';
 
-        var text1Lines = lines[0];
-        var text2Lines = lines[1];
-
-        var modified = [];
-        var deletedText = formatLeftText(results, modified, text1Lines);
-        var addedText = formatRightText(results, modified, text2Lines);
-
-        return [deletedText, addedText];
-    };
-
-    var escapeHtml = function(string) {
-        var entityMap = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': '&quot;',
-            "'": '&#39;',
-            "/": '&#x2F;'
-        };
-
-        return String(string).replace(/[&<>"'\/]/g, function (s) {
-            return entityMap[s];
-        });
+        return append;
     };
 
     return {
         lineUpText: lineUpText, //exposed for testing
-        doDiff: doDiff
+        formattedDiff: formattedDiff
     };
 };

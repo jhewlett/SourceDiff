@@ -64,7 +64,7 @@ void method(int a, int b)
         var text1 = document.getElementById('original').value;
         var text2 = document.getElementById('edited').value;
 
-        var results = formatter.doDiff(text1, text2);
+        var results = formatter.formattedDiff(text1, text2);
 
         document.getElementById('original_result').innerHTML = results[0];
         document.getElementById('edited_result').innerHTML = results[1];
