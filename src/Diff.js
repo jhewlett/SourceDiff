@@ -15,8 +15,8 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     };
 
     var diff = function(s1, s2) {
-        var s1Lines = s1.split('\n');    //todo: handle \r?
-        var s2Lines = s2.split('\n');
+        var s1Lines = s1.split(/\r?\n/);
+        var s2Lines = s2.split(/\r?\n/);
 
         padBlankLines(s1Lines);
         padBlankLines(s2Lines);
