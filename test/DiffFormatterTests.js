@@ -239,3 +239,15 @@ test("Padding is added bug", function() {
     assertEquals(' ', lines[1][0]);
     assertEquals(' ', lines[1][1]);
 });
+
+test("formatLeftText: hello2 to hl2", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var results = {added: [], deleted: []};
+
+    var formatter = new SourceDiff.DiffFormatter(diff);
+
+    var deletedText = formatter.formatLeftText(results, ['hello2'], [{line: 0, results: {deleted: [{char: 1, text: 'el'}, {char: 4, text: 'o'}]}}]);
+
+    assertEquals('<span class=\"modified\">h<span class=\"modified-light\">el</span>l<span class=\"modified-light\">o</span>2</span><br>', deletedText);
+});

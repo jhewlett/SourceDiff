@@ -45,6 +45,12 @@ body {
     display: inline-block;
 }
 
+.modified-light {
+    background-color: #fcffb6;
+    /*min-width: 100%;*/
+    /*display: inline-block;*/
+}
+
 .padding {
     background-color: lightgray;
     min-width: 100%;

@@ -14,6 +14,37 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return str;
     };
 
+    var lineDiff = function(s1, s2) {
+        var matrix = createMatrix(s1, s2);
+
+        fillMatrix(s1, s2, matrix);
+
+        var added = [];
+        var deleted = [];
+
+        var i = s1.length;
+        var j = s2.length;
+
+        while (i >= 0 && j >= 0) {
+            if (s1[i - 1] === s2[j - 1]) {
+                i--;
+                j--;
+            } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
+                if (s2[j - 1].length > 0) {
+                    added.unshift({char: j - 1, text: s2[j - 1]});   //todo: do I even need to store the text?
+                }
+                j--;
+            } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
+                if (s1[i - 1].length > 0) {
+                    deleted.unshift({char: i - 1, text: s1[i - 1]});
+                }
+                i--;
+            }
+        }
+
+        return {added: added, deleted: deleted};
+    };
+
     var diff = function(s1, s2) {
         var s1Lines = s1.split(/\r?\n/);
         var s2Lines = s2.split(/\r?\n/);
@@ -111,6 +142,7 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     return {
         diff: diff,
         trim: trim,   //exposed for testing
-        padBlankLines: padBlankLines       //used by DiffFormatter
+        padBlankLines: padBlankLines,       //used by DiffFormatter
+        lineDiff: lineDiff
     };
 };

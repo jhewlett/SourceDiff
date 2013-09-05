@@ -105,3 +105,13 @@ test("leading whitespace is ignored", function() {
 
     assertEquals({added: [], deleted: []}, result);
 });
+
+test("character diff for line", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var results = diff.lineDiff('var test = "hello";', 'var test2 = "hell";');
+
+    assertEquals([{char: 8, text: '2'}], results.added);
+    assertEquals([{char: 16, text: 'o'}], results.deleted);
+
+});
