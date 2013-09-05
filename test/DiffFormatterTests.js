@@ -219,7 +219,7 @@ test("lined up correctly with two edit runs", function() {
     assertEquals(' ', lines[1][4]);
 });
 
-test("Padding is added bug", function() {
+test("Padding is added when one text is just a space", function() {
     var text1 = ' ';
     var text2 = '\n';
 
