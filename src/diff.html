@@ -43,18 +43,18 @@ void method(int a, int b)
 </div>
 <script src="Diff.js"></script>
 <script src="DiffFormatter.js"></script>
-<script src="../lib/jquery-2.0.3.min.js" ></script>
 <script>
-    var scrollLeft = $('#scrollLeft');
-    var scrollRight = $('#scrollRight');
+    var scrollLeft = document.getElementById('scrollLeft');
+    var scrollRight = document.getElementById('scrollRight');
 
-    scrollLeft.scroll(function () {
-        scrollRight.scrollTop(scrollLeft.scrollTop());
-        scrollRight.scrollLeft(scrollLeft.scrollLeft());
+    scrollLeft.addEventListener('scroll', function() {
+        scrollRight.scrollLeft = scrollLeft.scrollLeft;
+        scrollRight.scrollTop = scrollLeft.scrollTop;
     });
-    scrollRight.scroll(function () {
-        scrollLeft.scrollTop(scrollRight.scrollTop());
-        scrollLeft.scrollLeft(scrollRight.scrollLeft());
+
+    scrollRight.addEventListener('scroll', function() {
+        scrollLeft.scrollLeft = scrollRight.scrollLeft;
+        scrollLeft.scrollTop = scrollRight.scrollTop;
     });
 
     function doDiff() {
