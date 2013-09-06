@@ -1,5 +1,27 @@
-body {
-    background-color: #FFFFFF;
+pre {
+    background-color: white;
+    margin: 5px;
+    white-space: pre;
+    word-wrap: normal;
+    border: none;
+}
+
+button {
+    margin: 5px 5px 5px 20px;
+    width: 100px;
+    height: 35px;
+}
+
+h3 {
+    margin: 10px;
+}
+
+textarea {
+    width: 97%;
+    height: 180px;
+    margin: 5px;
+    font-size: 13px;
+    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
 }
 
 .text {
@@ -7,24 +29,23 @@ body {
 }
 
 .wrapper {
-    width: 100%;
+    width: 98%;
 }
 
 .left {
     float: left;
-    width: 49%;
-    margin-right: 2%;
+    width: 50%;
+}
+
+.right {
+    float: right;
+    width: 50%;
 }
 
 .scroll {
     height: 600px;
     overflow-x: auto;
     overflow-y: auto;
-}
-
-.right {
-    float: right;
-    width: 49%;
 }
 
 .inserted {
@@ -49,14 +70,4 @@ body {
     background-color: lightgray;
     min-width: 100%;
     display: inline-block;
-}
-
-textarea {
-    width: 100%;
-    height: 200px;
-}
-
-button {
-    width: 100px;
-    height: 30px;
 }
