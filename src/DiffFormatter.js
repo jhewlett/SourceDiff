@@ -124,13 +124,20 @@ SourceDiff.DiffFormatter = function(diff) {
     var getStartingPos = function(results) {
         var firstDelete = results.deleted.length > 0
             ? results.deleted[0].line
-            : 0;
+            : -1;
 
         var firstAdd = results.added.length > 0
             ? results.added[0].line
-            : 0;
+            : -1;
 
-        var firstEdit = Math.min(firstDelete, firstAdd);
+        var firstEdit;
+        if (firstDelete === -1) {
+            firstEdit = firstAdd;
+        } else if (firstAdd === -1) {
+            firstEdit = firstDelete;
+        } else {
+            firstEdit = Math.min(firstDelete, firstAdd)
+        }
 
         return Math.max(0, firstEdit - 10);
     };
