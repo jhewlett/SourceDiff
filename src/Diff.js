@@ -14,9 +14,13 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return str;
     };
 
+    var split = function(string) {
+        return string.split(/\r?\n/);
+    }
+
     var diff = function(s1, s2) {
-        var s1Lines = s1.split(/\r?\n/);
-        var s2Lines = s2.split(/\r?\n/);
+        var s1Lines = split(s1);
+        var s2Lines = split(s2);
 
         padBlankLines(s1Lines);
         padBlankLines(s2Lines);
@@ -34,7 +38,7 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         var deleted = [];
 
         while (i >= 0 && j >= 0) {
-            if (trimWhiteSpace(s1Lines[i - 1]) === trimWhiteSpace(s2Lines[j - 1])) {
+            if (linesAreEqual(s1Lines[i - 1], s2Lines[j - 1])) {
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
@@ -50,7 +54,55 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
             }
         }
 
+        checkShiftEdits(split(s1), deleted);
+        checkShiftEdits(split(s2), added);
+
         return {added: added, deleted: deleted};
+    };
+
+    var linesAreEqual = function(line1, line2) {
+        return trimWhiteSpace(line1) === trimWhiteSpace(line2);
+    };
+
+    //Find all continuous runs of inserts or deletes. For each run, see if it can be shifted forward 1 line.
+    //This is useful for properly pairing opening and closing braces in C-like languages, for example.
+    var checkShiftEdits = function(textLines, edits) {
+        if (edits.length > 0) {
+            var startRun = edits[0].line;
+
+            var current = startRun;
+            for (var i = 1; i < edits.length; i++) {
+                if (i === edits.length - 1) {   //end of the run and the edits
+                    checkShiftRun(textLines, edits, startRun, current + 1);
+                } else if (edits[i].line === current + 1) {
+                    current += 1;
+                } else {    //end of the run
+                    checkShiftRun(textLines, edits, startRun, current);
+
+                    startRun = current = edits[i].line;
+                }
+            }
+        }
+    };
+
+    var checkShiftRun = function(textLines, edits, startRun, endRun) {
+        if (linesAreEqual(textLines[startRun], textLines[endRun + 1]) && lineIsBlank(textLines[startRun + 1])) {
+            removeEdit(edits, startRun);
+            edits.push({line: endRun + 1, text: textLines[endRun + 1]});
+        }
+    };
+
+    var lineIsBlank = function(line) {
+        return /^\s*$/.test(line);
+    };
+
+    var removeEdit = function(array, line) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i].line === line) {
+                array.splice(i, 1);
+                break;
+            }
+        }
     };
 
     var createMatrix = function(s1Lines, s2Lines) {

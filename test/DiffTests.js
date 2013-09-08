@@ -105,3 +105,48 @@ test("leading whitespace is ignored", function() {
 
     assertEquals({added: [], deleted: []}, result);
 });
+
+test("Inserts are shifted to line up braces", function() {
+    var text1 = 'void CommonMethod()\n{\n  Common();\n}';
+    var text2 = 'void CommonMethod()\n{\n  NewMethod();\n  Common();\n}\n\nvoid NewMethod()\n{\n  DoStuff();\n} ';
+
+    var diff = new SourceDiff.Diff(false);
+    var results = diff.diff(text1, text2);
+
+    assertEquals([{line: 2, text: '  NewMethod();'},
+        {line: 5, text: ' '},
+        {line: 6, text: 'void NewMethod()'},
+        {line: 7, text: '{'},
+        {line: 8, text: '  DoStuff();'},
+        {line: 9, text: '} '}], results.added);
+});
+
+test("Inserts are not shifted if the resulting run would not start in a blank line or whitespace", function() {
+    var text1 = 'void CommonMethod()\n{\n  Common();\n}';
+    var text2 = 'void CommonMethod()\n{\n  NewMethod();\n  Common();\n}\nnon blank\nvoid NewMethod()\n{\n  DoStuff();\n}';
+
+    var diff = new SourceDiff.Diff(false);
+    var results = diff.diff(text1, text2);
+
+    assertEquals([{line: 2, text: '  NewMethod();'},
+        {line: 4, text: '}'},
+        {line: 5, text: 'non blank'},
+        {line: 6, text: 'void NewMethod()'},
+        {line: 7, text: '{'},
+        {line: 8, text: '  DoStuff();'}], results.added);
+});
+
+test("Deletes are shifted to line up braces", function() {
+    var text1 = 'void CommonMethod()\n{\n  NewMethod();\n  Common();\n}\n\nvoid NewMethod()\n{\n  DoStuff();\n} ';
+    var text2 = 'void CommonMethod()\n{\n  Common();\n} ';
+
+    var diff = new SourceDiff.Diff(false);
+    var results = diff.diff(text1, text2);
+
+    assertEquals([{line: 2, text: '  NewMethod();'},
+        {line: 5, text: ' '},
+        {line: 6, text: 'void NewMethod()'},
+        {line: 7, text: '{'},
+        {line: 8, text: '  DoStuff();'},
+        {line: 9, text: '} '}], results.deleted);
+});
