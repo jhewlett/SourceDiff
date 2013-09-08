@@ -146,13 +146,13 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     var trim = function(s1Lines, s2Lines) {
         var prefixLines = 0;
 
-        while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[0] === s2Lines[0]) {
+        while (s1Lines.length > 0 && s2Lines.length > 0 && linesAreEqual(s1Lines[0], s2Lines[0])) {
             s1Lines.shift();
             s2Lines.shift();
             prefixLines++;
         }
 
-        while (s1Lines.length > 0 && s2Lines.length > 0 && s1Lines[s1Lines.length - 1] === s2Lines[s2Lines.length - 1]) {
+        while (s1Lines.length > 0 && s2Lines.length > 0 && linesAreEqual(s1Lines[s1Lines.length - 1], s2Lines[s2Lines.length - 1])) {
             s1Lines.pop();
             s2Lines.pop();
         }

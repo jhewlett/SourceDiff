@@ -150,3 +150,14 @@ test("Deletes are shifted to line up braces", function() {
         {line: 8, text: '  DoStuff();'},
         {line: 9, text: '} '}], results.deleted);
 });
+
+test("Trim ignores whitespace", function() {
+    var text1 = "Foo = 'hello';\n";
+    var text2 = "  Foo = 'hello'; ";
+
+    var diff = new SourceDiff.Diff(true);
+    var results = diff.diff(text1, text2);
+
+    assertEquals([{line: 1, text: ' '}], results.deleted);
+    assertEquals([], results.added);
+});
