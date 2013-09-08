@@ -161,3 +161,14 @@ test("Trim ignores whitespace", function() {
     assertEquals([{line: 1, text: ' '}], results.deleted);
     assertEquals([], results.added);
 });
+
+test("When filling the matrix, whitespace is ignored", function() {
+    var text1 = "new\r\ncommon \ncommon2  \nnew2";
+    var text2 = "common\ncommon2";
+
+    var diff = new SourceDiff.Diff(true);
+    var results = diff.diff(text1, text2);
+
+    assertEquals([{line: 0, text: 'new'}, {line: 3, text: 'new2'}], results.deleted);
+    assertEquals([], results.added);
+});

@@ -70,8 +70,8 @@ SourceDiff.DiffFormatter = function(diff) {
     };
 
     var lineUpText = function(text1, text2, results) {
-        var text1Lines = text1.split(/\r?\n/);
-        var text2Lines = text2.split(/\r?\n/);
+        var text1Lines = _diff.split(text1);
+        var text2Lines = _diff.split(text2);
 
         _diff.padBlankLines(text1Lines);
         _diff.padBlankLines(text2Lines);
