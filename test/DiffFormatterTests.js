@@ -150,9 +150,6 @@ test("lined up correctly", function() {
     var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
-    assertEquals([{line: 1, text: 'L1'}], results.deleted);
-    assertEquals([{line: 0, text: 'R1'}, {line: 2, text: 'R2'}], results.added);
-
     var formatter = new SourceDiff.DiffFormatter(diff);
 
     var lines = formatter.lineUpText(text1, text2, results);
@@ -174,9 +171,6 @@ test("lined up correctly 2", function() {
     var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
 
-    assertEquals([{line: 0, text: 'L'}], results.deleted);
-    assertEquals([{line: 1, text: 'R'}], results.added);
-
     var formatter = new SourceDiff.DiffFormatter(diff);
 
     var lines = formatter.lineUpText(text1, text2, results);
@@ -197,9 +191,6 @@ test("lined up correctly with two edit runs", function() {
 
     var diff = new SourceDiff.Diff(false);
     var results = diff.diff(text1, text2);
-
-    assertEquals([{line: 0, text: 'L'}, {line: 3, text: 'L2'}], results.deleted);
-    assertEquals([{line: 1, text: 'R'}], results.added);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
 
@@ -225,8 +216,6 @@ test("Padding is added when one text is just a space", function() {
 
     var diff = new SourceDiff.Diff(true);
     var results = diff.diff(text1, text2);
-
-    assertEquals([{line: 1, text: ' '}], results.added);
 
     var formatter = new SourceDiff.DiffFormatter(diff);
 

@@ -38,33 +38,16 @@ SourceDiff.DiffFormatter = function(diff) {
     };
 
     var findModifiedLines = function(text1Lines, text2Lines, results) {
-        results.modifiedRight = [];
-        results.modifiedLeft = [];
+        results.modifiedRight = new SourceDiff.EditSet();
+        results.modifiedLeft = new SourceDiff.EditSet();
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (contains(results.added, i) && contains(results.deleted, i)) {
-                results.modifiedLeft.push({line: i});
-                results.modifiedRight.push({line: i});
-            } else if (contains(results.added, i) && contains(results.modifiedRight, i - 1)) {
-                results.modifiedRight.push({line: i});
-            } else if (contains(results.deleted, i) && contains(results.modifiedLeft, i - 1)) {
-                results.modifiedLeft.push({line: i});
-            }
-        }
-    };
-
-    var contains = function(array, line) {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i].line === line) {
-                return true;
-            }
-        }
-        return false;
-    };
-
-    var updateLineNumbers = function(array, startPos) {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i].line >= startPos) {
-                array[i].line++;
+            if (results.added.contains(i) && results.deleted.contains(i)) {
+                results.modifiedLeft.add(i);
+                results.modifiedRight.add(i);
+            } else if (results.added.contains(i) && results.modifiedRight.contains(i - 1)) {
+                results.modifiedRight.add(i);
+            } else if (results.deleted.contains(i) && results.modifiedLeft.contains(i - 1)) {
+                results.modifiedLeft.add(i);
             }
         }
     };
@@ -76,18 +59,18 @@ SourceDiff.DiffFormatter = function(diff) {
         _diff.padBlankLines(text1Lines);
         _diff.padBlankLines(text2Lines);
 
-        results.paddingLeft = [];
-        results.paddingRight = [];
+        results.paddingLeft = new SourceDiff.EditSet();
+        results.paddingRight = new SourceDiff.EditSet();
 
         for (var i = 0; i < Math.max(text1Lines.length, text2Lines.length); i++) {
-            if (!contains(results.deleted, i) && contains(results.added, i)) {
+            if (!results.deleted.contains(i) && results.added.contains(i)) {
                 text1Lines.splice(i, 0, ' ');
-                updateLineNumbers(results.deleted, i);
-                results.paddingLeft.push({line: i});
-            } else if (contains(results.deleted, i) && !contains(results.added, i)) {
+                results.deleted.updateNumbers(i);
+                results.paddingLeft.add(i);
+            } else if (results.deleted.contains(i) && !results.added.contains(i)) {
                 text2Lines.splice(i, 0, ' ');
-                updateLineNumbers(results.added, i);
-                results.paddingRight.push({line: i});
+                results.added.updateNumbers(i);
+                results.paddingRight.add(i);
             }
         }
 
@@ -122,12 +105,16 @@ SourceDiff.DiffFormatter = function(diff) {
     };
 
     var getStartingPos = function(results) {
-        var firstDelete = results.deleted.length > 0
-            ? results.deleted[0].line
+        var allDeletes = results.deleted.all();
+
+        var firstDelete = allDeletes.length > 0
+            ? allDeletes[0]
             : -1;
 
-        var firstAdd = results.added.length > 0
-            ? results.added[0].line
+        var allAdds = results.added.all();
+
+        var firstAdd = allAdds.length > 0
+            ? allAdds[0]
             : -1;
 
         var firstEdit;
@@ -143,12 +130,16 @@ SourceDiff.DiffFormatter = function(diff) {
     };
 
     var getEndingPos = function(results, lines) {
-        var lastDelete = results.deleted.length > 0
-            ? results.deleted[results.deleted.length - 1].line
+        var allDeletes = results.deleted.all();
+
+        var lastDelete = allDeletes.length > 0
+            ? allDeletes[allDeletes.length - 1]
             : 0;
 
-        var lastAdd = results.added.length > 0
-            ? results.added[results.added.length - 1].line
+        var allAdds = results.added.all();
+
+        var lastAdd = allAdds.length > 0
+            ? allAdds[allAdds.length - 1]
             : 0;
 
         var lastEdit = Math.max(lastDelete, lastAdd);
@@ -158,11 +149,11 @@ SourceDiff.DiffFormatter = function(diff) {
 
     var getClassNameLeft = function (results, i) {
         var className = '';
-        if (contains(results.modifiedLeft, i)) {
+        if (results.modifiedLeft.contains(i)) {
             className = 'modified';
-        } else if (contains(results.paddingLeft, i)) {
+        } else if (results.paddingLeft.contains(i)) {
             className = 'padding';
-        } else if (contains(results.deleted, i)) {
+        } else if (results.deleted.contains(i)) {
             className = 'deleted';
         }
         return className;
@@ -170,11 +161,11 @@ SourceDiff.DiffFormatter = function(diff) {
 
     var getClassNameRight = function (results, i) {
         var className = '';
-        if (contains(results.modifiedRight, i)) {
+        if (results.modifiedRight.contains(i)) {
             className = 'modified';
-        } else if (contains(results.paddingRight, i)) {
+        } else if (results.paddingRight.contains(i)) {
             className = 'padding';
-        } else if (contains(results.added, i)) {
+        } else if (results.added.contains(i)) {
             className = 'inserted';
         }
         return className;
