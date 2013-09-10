@@ -39,71 +39,132 @@ test("everything is an add", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff('', 'added text');
 
-    assertEquals({added: [{line: 0, text: 'added text'}], deleted: []}, result);
+    assertEquals([0], result.added.all());
+    assertEquals([], result.deleted.all());
 });
 
 test("Deleting last line", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff('test\ndelete me', 'test');
 
-    assertEquals({added: [], deleted: [{line: 1, text: 'delete me'}]}, result);
+    assertEquals([], result.added.all());
+    assertEquals([1], result.deleted.all());
 });
 
 test("Everything is a delete", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff('delete me', '');
 
-    assertEquals({added: [], deleted: [{line: 0, text: 'delete me'}]}, result);
+    assertEquals([], result.added.all());
+    assertEquals([0], result.deleted.all());
 });
 
 test("line diff remove and add lines", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff("if (cond)\ndoSomething()\n//a func call", "if (cond)\n//a func call\n//no longer needed");
 
-    assertEquals({added: [{line: 2, text: '//no longer needed'}], deleted: [{line: 1, text: 'doSomething()'}]}, result);
+    assertEquals([2], result.added.all());
+    assertEquals([1], result.deleted.all());
 });
 
 test("line diff simple delete first line", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff("first line\nsecond line", "second line");
 
-    assertEquals({added: [], deleted: [{line: 0, text: 'first line'}]}, result);
+    assertEquals([], result.added.all());
+    assertEquals([0], result.deleted.all());
 });
 
 test("line add and delete", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff("if (cond)\ndoSomething()", "//no check needed\ndoNothing()");
 
-    assertEquals({added: [{line: 0, text: '//no check needed'}, {line: 1, text: 'doNothing()'}],
-        deleted: [{line: 0, text: 'if (cond)'}, {line: 1, text: 'doSomething()'}]}, result);
+    assertEquals([0, 1], result.added.all());
+    assertEquals([0, 1], result.deleted.all());
 });
 
 test("add line at top", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff("doSomething()", "if (cond)\ndoSomething()");
 
-    assertEquals({added: [{line: 0, text: 'if (cond)'}], deleted: []}, result);
+    assertEquals([0], result.added.all());
+    assertEquals([], result.deleted.all());
 });
 
 test("trailing whitespace is ignored", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff("line\t", "line     \t  ");
 
-    assertEquals({added: [], deleted: []}, result);
+    assertEquals([], result.added.all());
+    assertEquals([], result.deleted.all());
 });
 
 test("leading whitespace is not ignored", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff('line', ' line');
 
-    assertEquals({added: [{line: 0, text: ' line'}], deleted: [{line: 0, text: 'line'}]}, result);
+    assertEquals([0], result.added.all());
+    assertEquals([0], result.deleted.all());
 });
 
 test("leading whitespace is ignored", function() {
     var diff = new SourceDiff.Diff(true);
     var result = diff.diff('  line\t', '\t \t  line     \t  ');
 
-    assertEquals({added: [], deleted: []}, result);
+    assertEquals([], result.added.all());
+    assertEquals([], result.deleted.all());
+});
+
+test("Inserts are shifted to line up braces", function() {
+    var text1 = 'void CommonMethod()\n{\n  Common();\n}';
+    var text2 = 'void CommonMethod()\n{\n  NewMethod();\n  Common();\n}\n\nvoid NewMethod()\n{\n  DoStuff();\n} ';
+
+    var diff = new SourceDiff.Diff(false);
+    var result = diff.diff(text1, text2);
+
+    assertEquals([2, 5, 6, 7, 8, 9], result.added.all());
+});
+
+test("Inserts are not shifted if the resulting run would not start in a blank line or whitespace", function() {
+    var text1 = 'void CommonMethod()\n{\n  Common();\n}';
+    var text2 = 'void CommonMethod()\n{\n  NewMethod();\n  Common();\n}\nnon blank\nvoid NewMethod()\n{\n  DoStuff();\n}';
+
+    var diff = new SourceDiff.Diff(false);
+    var result = diff.diff(text1, text2);
+
+    assertEquals([2, 4, 5, 6, 7, 8], result.added.all());
+});
+
+test("Deletes are shifted to line up braces", function() {
+    var text1 = 'void CommonMethod()\n{\n  NewMethod();\n  Common();\n}\n\nvoid NewMethod()\n{\n  DoStuff();\n} ';
+    var text2 = 'void CommonMethod()\n{\n  Common();\n} ';
+
+    var diff = new SourceDiff.Diff(false);
+    var result = diff.diff(text1, text2);
+
+    assertEquals([2, 5, 6, 7, 8, 9], result.deleted.all());
+});
+
+test("Trim ignores whitespace", function() {
+    var text1 = "Foo = 'hello';\n";
+    var text2 = "  Foo = 'hello'; ";
+
+    var diff = new SourceDiff.Diff(true);
+    var result = diff.diff(text1, text2);
+
+    assertEquals([], result.added.all());
+    assertEquals([1], result.deleted.all());
+});
+
+test("When filling the matrix, whitespace is ignored", function() {
+    var text1 = "new\r\ncommon \ncommon2  \nnew2";
+    var text2 = "common\ncommon2";
+
+    var diff = new SourceDiff.Diff(true);
+    var result = diff.diff(text1, text2);
+
+    assertEquals([], result.added.all());
+    assertEquals([0,3], result.deleted.all());
 });
 
 test("character diff for line", function() {

@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Diff test</title>
+    <link href="../lib/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -9,56 +10,107 @@
     <div class="left">
         <h3>Original</h3>
         <textarea id="original">
-//a cool method
-void method(int a, int b)
-{
-   //return the answer
-   return 1 + 2;
+body {
+    background-color: #FFFFFF;          /* set the background color to something meaningful */
+}
+
+#wrapper {
+    /*width: 1310px;*/
+    width: 100%;
+    height: 500px;
+}
+
+#left {
+    float: left;
+    /*width: 650px;*/
+    width: 49%;
+    height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+    /*margin-right: 10px;*/
+    margin-right: 2%;
+}
+
+#right {
+    float: right;
+    /*width: 650px;*/
+    width: 49%;
+    height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
 }
         </textarea>
     </div>
     <div class="right">
         <h3>Edit</h3>
         <textarea id="edited">
-//with params
-void method(int a, int b)
-{
-   return 1 + 2;
-   //already
-   //returned
+body {
+    background-color: #FFFFFF;          /* set the background color to something meaningful */
+}
+
+.text {
+    width: 50%;
+}
+
+.wrapper {
+    width: 100%;
+}
+
+.left {
+    float: left;
+    width: 49%;
+    margin-right: 2%;
+}
+
+.scroll {
+    height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.right {
+    float: right;
+    width: 49%;
 }
         </textarea>
     </div>
 </div>
-<button onclick="doDiff()">Diff</button>
+<button class="btn" onclick="doDiff()"><strong>Diff</strong></button>
+<div class="wrapper">
+    <div class="left">
+        <h3>Original</h3>
+    </div>
+    <div class="right">
+        <h3>Edit</h3>
+    </div>
+</div>
 <div class="wrapper">
     <div class="left scroll" id="scrollLeft">
-        <h3>Original</h3>
         <pre id="original_result"></pre>
     </div>
     <div class="right scroll" id="scrollRight">
-        <h3>Edit</h3>
         <pre id="edited_result"></pre>
     </div>
 </div>
+<script src="EditSet.js"></script>
 <script src="Diff.js"></script>
 <script src="DiffFormatter.js"></script>
-<script src="../lib/jquery-2.0.3.min.js" ></script>
 <script>
-    var scrollLeft = $('#scrollLeft');
-    var scrollRight = $('#scrollRight');
+    var scrollLeft = document.getElementById('scrollLeft');
+    var scrollRight = document.getElementById('scrollRight');
 
-    scrollLeft.scroll(function () {
-        scrollRight.scrollTop(scrollLeft.scrollTop());
-        scrollRight.scrollLeft(scrollLeft.scrollLeft());
+    scrollLeft.addEventListener('scroll', function() {
+        scrollRight.scrollLeft = scrollLeft.scrollLeft;
+        scrollRight.scrollTop = scrollLeft.scrollTop;
     });
-    scrollRight.scroll(function () {
-        scrollLeft.scrollTop(scrollRight.scrollTop());
-        scrollLeft.scrollLeft(scrollRight.scrollLeft());
+
+    scrollRight.addEventListener('scroll', function() {
+        scrollLeft.scrollLeft = scrollRight.scrollLeft;
+        scrollLeft.scrollTop = scrollRight.scrollTop;
     });
 
     function doDiff() {
-        var diff = new SourceDiff.Diff(true);
+        var diff = new SourceDiff.Diff(true);   //don't ignore leading whitespace
         var formatter = new SourceDiff.DiffFormatter(diff);
 
         var text1 = document.getElementById('original').value;
