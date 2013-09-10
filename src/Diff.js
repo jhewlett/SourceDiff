@@ -74,9 +74,12 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
             var current = startRun;
             for (var i = 1; i < editArray.length; i++) {
                 if (i === editArray.length - 1) {   //end of the run and the edits
-                    checkShiftRun(textLines, editSet, startRun, current + 1);
+                    if (editArray[i] === current + 1) {
+                        current++;
+                    }
+                    checkShiftRun(textLines, editSet, startRun, current);
                 } else if (editArray[i] === current + 1) {
-                    current += 1;
+                    current ++;
                 } else {    //end of the run
                     checkShiftRun(textLines, editSet, startRun, current);
 

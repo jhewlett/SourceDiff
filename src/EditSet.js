@@ -15,6 +15,10 @@ SourceDiff.EditSet = function() {
         return all().length;
     };
 
+    var sortIntegers = function(a, b) {
+        return a - b;
+    };
+
     var all = function() {
         var arr = [];
 
@@ -24,11 +28,11 @@ SourceDiff.EditSet = function() {
             }
         }
 
-        return arr.sort();
+        return arr.sort(sortIntegers);
     };
 
     var contains = function(lineNumber) {
-        return _set[lineNumber.toString()];
+        return _set[lineNumber.toString()] === true;
     };
 
     var updateNumbers = function(lineNumber) {
