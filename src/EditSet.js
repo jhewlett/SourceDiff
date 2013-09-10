@@ -39,11 +39,13 @@ SourceDiff.EditSet = function() {
         var newSet = {};
 
         for (var prop in _set) {
-            var parsed = parseInt(prop);
-            if (parsed >= lineNumber) {
-                newSet[parsed + 1] = true;
-            } else {
-                newSet[parsed] = true;
+            if (_set[prop]) {
+                var parsed = parseInt(prop);
+                if (parsed >= lineNumber) {
+                    newSet[(parsed + 1).toString()] = true;
+                } else {
+                    newSet[parsed.toString()] = true;
+                }
             }
         }
 
