@@ -6,9 +6,6 @@ SourceDiff.DiffFormatter = function(diff) {
     var formattedDiff = function(text1, text2) {
         var results = _diff.diff(text1, text2);
 
-        text1 = escapeHtml(text1);
-        text2 = escapeHtml(text2);
-
         var lines = lineUpText(text1, text2, results);
 
         var text1Lines = lines[0];
@@ -28,8 +25,9 @@ SourceDiff.DiffFormatter = function(diff) {
         var modifiedLines = [];
 
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (contains(results.modifiedLeft, i) && contains(results.modifiedRight, i)) {
+            if (results.modifiedLeft.contains(i) && results.modifiedRight.contains(i)) {
                 var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
+                lineDiff.cleanUp();
 
                 modifiedLines.push({line: i, results: lineDiff});
             }
@@ -100,19 +98,19 @@ SourceDiff.DiffFormatter = function(diff) {
         var text1EndingPos = getEndingPos(results, text1Lines);
 
         for (var i = startingPos; i < text1EndingPos; i++) {
-            var modifiedLine = contains(modifiedLines, i)
+            var modifiedLine = contains(modifiedLines, i);
             if (modifiedLine) {
                 deletedText += '<span class="modified">';
                 var startIndex = 0;
                 for (var j = 0; j < modifiedLine.results.deleted.length; j++) {
-                    deletedText += text1Lines[i].substring(startIndex, modifiedLine.results.deleted[j].char);
-                    startIndex = modifiedLine.results.deleted[j].char + modifiedLine.results.deleted[j].text.length;
-                    deletedText += '<span class="modified-light">' + text1Lines[i].substring(modifiedLine.results.deleted[j].char, startIndex)
+                    deletedText += escapeHtml(text1Lines[i].substring(startIndex, modifiedLine.results.deleted[j].position));
+                    startIndex = modifiedLine.results.deleted[j].endPosition + 1;
+                    deletedText += '<span class="modified-light">' + escapeHtml(text1Lines[i].substring(modifiedLine.results.deleted[j].position, startIndex))
                         + '</span>';
                 }
 
                 if (startIndex < text1Lines[i].length) {
-                    deletedText += text1Lines[i].substring(startIndex, text1Lines[i].length);
+                    deletedText += escapeHtml(text1Lines[i].substring(startIndex, text1Lines[i].length));
                 }
 
                 deletedText += '</span><br>';
@@ -125,6 +123,14 @@ SourceDiff.DiffFormatter = function(diff) {
         return deletedText;
     };
 
+    var contains = function(array, line) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i].line === line) {
+                return array[i];
+            }
+        }
+    };
+
     var formatRightText = function (results, text2Lines, modifiedLines) {
         var addedText = '';
 
@@ -132,19 +138,19 @@ SourceDiff.DiffFormatter = function(diff) {
         var text2EndingPos = getEndingPos(results, text2Lines);
 
         for (var i = startingPos; i < text2EndingPos; i++) {
-            var modifiedLine = contains(modifiedLines, i)
+            var modifiedLine = contains(modifiedLines, i);
             if (modifiedLine) {
                 addedText += '<span class="modified">';
                 var startIndex = 0;
                 for (var j = 0; j < modifiedLine.results.added.length; j++) {
-                    addedText += text2Lines[i].substring(startIndex, modifiedLine.results.added[j].char);
-                    startIndex = modifiedLine.results.added[j].char + modifiedLine.results.added[j].text.length;
-                    addedText += '<span class="modified-light">' + text2Lines[i].substring(modifiedLine.results.added[j].char, startIndex)
+                    addedText += escapeHtml(text2Lines[i].substring(startIndex, modifiedLine.results.added[j].position));
+                    startIndex = modifiedLine.results.added[j].endPosition + 1;
+                    addedText += '<span class="modified-light">' + escapeHtml(text2Lines[i].substring(modifiedLine.results.added[j].position, startIndex))
                         + '</span>';
                 }
 
                 if (startIndex < text2Lines[i].length) {
-                    addedText += text2Lines[i].substring(startIndex, text2Lines[i].length);
+                    addedText += escapeHtml(text2Lines[i].substring(startIndex, text2Lines[i].length));
                 }
 
                 addedText += '</span><br>';

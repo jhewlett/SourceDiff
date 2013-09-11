@@ -172,7 +172,96 @@ test("character diff for line", function() {
 
     var results = diff.lineDiff('var test = "hello";', 'var test2 = "hell";');
 
-    assertEquals([{char: 8, text: '2'}], results.added);
-    assertEquals([{char: 16, text: 'o'}], results.deleted);
+    assertEquals([{position: 8, endPosition: 8}], results.added);
+    assertEquals([{position: 16, endPosition: 16}], results.deleted);
 
+});
+
+test("line diff semantic cleanup merges adjacent edits", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('aayyyyyybb', 'cccyyyyyyddd');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 1}, {position: 8, endPosition: 9}], lineDiff.deleted);
+    assertEquals([{position: 0, endPosition: 2}, {position: 9, endPosition: 11}], lineDiff.added);
+    assertEquals([{leftPosition: 2, leftEndPosition: 7, rightPosition: 3, rightEndPosition: 8}], lineDiff.common);
+});
+
+test("line diff semantic cleanup removes edits that are equal to or smaller than surrounding equalities", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('ing', 'nment');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 4}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 2}], lineDiff.deleted);
+});
+
+test("line diff semantic cleanup handles when there is no delete on the left", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('ng', 'inment');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 5}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 1}], lineDiff.deleted);
+});
+
+test("line diff semantic cleanup handles when there is no delete on the right", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('in', 'gnment');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 5}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 1}], lineDiff.deleted);
+});
+
+test("line diff semantic cleanup handles when there is no delete on the left or right", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('n', 'gnment');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 5}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 0}], lineDiff.deleted);
+});
+
+test("line diff semantic cleanup handles when there is no add on the right", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('ing', 'mestn');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 4}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 2}], lineDiff.deleted);
+});
+
+test("line diff semantic cleanup handles when there is no add on the left or right", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('ing', 'n');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 0}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 2}], lineDiff.deleted);
+});
+
+test("line diff semantic cleanup makes multiple passes", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('Hovering', 'My government');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 12}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 7}], lineDiff.deleted);
 });

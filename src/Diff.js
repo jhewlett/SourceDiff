@@ -17,36 +17,38 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     var split = function(string) {
         return string.split(/\r?\n/);
     };
-    
+
     var lineDiff = function(s1, s2) {
         var matrix = createMatrix(s1, s2);
 
         fillMatrix(s1, s2, matrix);
 
-        var added = [];
-        var deleted = [];
+        var diff = new SourceDiff.LineDiff();
 
         var i = s1.length;
         var j = s2.length;
 
         while (i >= 0 && j >= 0) {
             if (s1[i - 1] === s2[j - 1]) {
+                if (s1[i - 1]) {
+                    diff.addCommon(i - 1, j - 1, s1[i - 1].length);
+                }
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
                 if (s2[j - 1].length > 0) {
-                    added.unshift({char: j - 1, text: s2[j - 1]});   //todo: do I even need to store the text?
+                    diff.addInsert(j - 1, s2[j - 1].length);
                 }
                 j--;
             } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
                 if (s1[i - 1].length > 0) {
-                    deleted.unshift({char: i - 1, text: s1[i - 1]});
+                    diff.addDelete(i - 1, s1[i - 1].length);
                 }
                 i--;
             }
         }
 
-        return {added: added, deleted: deleted};
+        return diff;
     };
 
     var diff = function(s1, s2) {

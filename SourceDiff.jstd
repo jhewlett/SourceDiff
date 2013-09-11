@@ -4,6 +4,7 @@ load:
   - src/EditSet.js
   - src/Diff.js
   - src/DiffFormatter.js
+  - src/LineDiff.js
 
 test:
   - test/*.js
