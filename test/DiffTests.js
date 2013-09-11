@@ -265,3 +265,12 @@ test("line diff semantic cleanup makes multiple passes", function() {
     assertEquals([{position: 0, endPosition: 12}], lineDiff.added);
     assertEquals([{position: 0, endPosition: 7}], lineDiff.deleted);
 });
+
+test("not an infinite loop", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('path = docSnapin.GetFile(filename, reallyLocked, eventId);',
+        'localPath = docSnapin.GetFile(docInfo.FileName, reallyLocked, eventID);');
+
+    lineDiff.cleanUp();
+});
