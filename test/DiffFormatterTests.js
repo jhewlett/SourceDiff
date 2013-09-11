@@ -232,11 +232,13 @@ test("Padding is added when one text is just a space", function() {
 test("formatLeftText: hello2 to hl2", function() {
     var diff = new SourceDiff.Diff(false);
 
-    var results = {added: [], deleted: []};
+    var results = {added: new SourceDiff.EditSet(), deleted: new SourceDiff.EditSet()};
 
     var formatter = new SourceDiff.DiffFormatter(diff);
 
-    var deletedText = formatter.formatLeftText(results, ['hello2'], [{line: 0, results: {deleted: [{char: 1, text: 'el'}, {char: 4, text: 'o'}]}}]);
+    var lineDiff = diff.lineDiff('hello2', 'el');
 
-    assertEquals('<span class=\"modified\">h<span class=\"modified-light\">el</span>l<span class=\"modified-light\">o</span>2</span><br>', deletedText);
+    var deletedText = formatter.formatLeftText(results, ['hello2'], [{line: 0, results: lineDiff}]);
+
+    assertEquals('<span class="modified"><span class="modified-light">h</span>e<span class="modified-light">l</span>l<span class="modified-light">o</span><span class="modified-light">2</span></span><br>', deletedText);
 });

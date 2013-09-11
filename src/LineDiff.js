@@ -109,7 +109,7 @@ SourceDiff.LineDiff = function() {
 
         for (var i = 0; i < edits.length; i++) {
             if (position > edits[i].position) {
-                edits.splice(i, 0, newEdit);
+                edits.splice(i + 1, 0, newEdit);
                 break;
             }
         }
