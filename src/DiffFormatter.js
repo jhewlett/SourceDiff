@@ -25,7 +25,7 @@ SourceDiff.DiffFormatter = function(diff) {
         var modifiedLines = [];
 
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (results.modifiedLeft.contains(i) && results.modifiedRight.contains(i)) {
+            if (results.modifiedLeft.contains(i) && results.modifiedRight.contains(i) && text1Lines[i] != ' ' && text2Lines[i] != ' ' ) {
                 var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
                 lineDiff.cleanUp();
 
@@ -46,7 +46,9 @@ SourceDiff.DiffFormatter = function(diff) {
             '/': '&#x2F;'
         };
 
-        return String(string).replace(/[&<>"'\/]/g, function (s) {
+        var replacedTabs = string.replace(/\t/g, '   ');
+
+        return String(replacedTabs).replace(/[&<>"'\/]/g, function (s) {
             return entityMap[s];
         });
     };
@@ -235,7 +237,7 @@ SourceDiff.DiffFormatter = function(diff) {
         if (className != '') {
             append += '<span class="' + className + '">';
         }
-        append += line.replace(/\t/g, '   ');
+        append += escapeHtml(line);
         if (className != '') {
             append += '</span>';
         }
