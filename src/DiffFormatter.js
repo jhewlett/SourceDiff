@@ -131,6 +131,7 @@ SourceDiff.DiffFormatter = function(diff) {
                 return array[i];
             }
         }
+        return false;
     };
 
     var formatRightText = function (results, text2Lines, modifiedLines) {
