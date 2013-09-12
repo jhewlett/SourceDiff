@@ -1,12 +1,12 @@
 var SourceDiff = SourceDiff || {};
 
 SourceDiff.LineDiff = function() {
-    var added = [];
-    var deleted = [];
-    var common = [];
+    var _added = [];
+    var _deleted = [];
+    var _common = [];
 
     var addCommon = function(leftPosition, rightPosition, length) {
-        common.unshift({
+        _common.unshift({
             leftPosition: leftPosition,
             leftEndPosition: leftPosition + length - 1,
             rightPosition: rightPosition,
@@ -15,13 +15,13 @@ SourceDiff.LineDiff = function() {
     };
 
     var addDelete = function(position, length) {
-        deleted.unshift({
+        _deleted.unshift({
             position: position,
             endPosition: position + length - 1});
     };
 
     var addInsert = function(position, length) {
-        added.unshift({
+        _added.unshift({
             position: position,
             endPosition: position + length - 1});
     };
@@ -38,65 +38,60 @@ SourceDiff.LineDiff = function() {
     };
 
     var cleanUp = function() {
-        mergeAdjacent(added);
-        mergeAdjacent(deleted);
+        mergeAdjacent(_added);
+        mergeAdjacent(_deleted);
+        mergeAdjacentCommon();
 
-        for (var i = 0; i < common.length; i++) {
-            if (i + 1 < common.length
-                    && common[i].leftEndPosition + 1 === common[i + 1].leftPosition
-                    && common[i].rightEndPosition + 1 === common[i + 1].rightPosition) {
-                common[i].leftEndPosition = common[i + 1].leftEndPosition;
-                common[i].rightEndPosition = common[i + 1].rightEndPosition;
-                common.splice(i + 1, 1);
-                i--;
-            }
-        }
+        do {
+            var merged = false;
+            for (var i = 0; i < _common.length; i++) {
+                var equalityLength = commonLength(_common[i]);
 
-        var cont = true;
-        while (cont) {
-            cont = false;
-            for (var i = 0; i < common.length; i++) {
-                var equalityLength = commonLength(common[i]);
+                var leftDelete = findEditWithEndingPosition(_deleted, _common[i].leftPosition - 1);
+                var rightDelete = findEditWithPosition(_deleted, _common[i].leftEndPosition + 1);
 
-                var leftDelete = findEditWithEndingPosition(deleted, common[i].leftPosition - 1);
-                var rightDelete = findEditWithPosition(deleted, common[i].leftEndPosition + 1);
-
-                var leftAdd = findEditWithEndingPosition(added, common[i].rightPosition - 1);
-                var rightAdd = findEditWithPosition(added, common[i].rightEndPosition + 1);
+                var leftAdd = findEditWithEndingPosition(_added, _common[i].rightPosition - 1);
+                var rightAdd = findEditWithPosition(_added, _common[i].rightEndPosition + 1);
                 if (editLength(leftDelete) + editLength(leftAdd) >= equalityLength
                         && editLength(rightDelete) + editLength(rightAdd) >= equalityLength) {
-                    cont = true;
-                    if (leftDelete) {
-                        if (rightDelete) {
-                            leftDelete.endPosition = rightDelete.endPosition;
-                            removeEdit(deleted, rightDelete);
-                        } else {
-                            leftDelete.endPosition = common[i].leftEndPosition;
-                        }
+                    merged = true;
+                    if (leftDelete && rightDelete) {
+                        leftDelete.endPosition = rightDelete.endPosition;
+                        removeEdit(_deleted, rightDelete);
+                    } else if(leftDelete) {
+                        leftDelete.endPosition = _common[i].leftEndPosition;
+                    } else if (rightDelete) {
+                        rightDelete.position = _common[i].leftPosition;
                     } else {
-                        if (rightDelete) {
-                            rightDelete.position = common[i].leftPosition;
-                        } else {
-                            addEdit(deleted, common[i].leftPosition, common[i].leftEndPosition);
-                        }
-                    }
-                    if (leftAdd) {
-                        if (rightAdd) {
-                            leftAdd.endPosition = rightAdd.endPosition;
-                            removeEdit(added, rightAdd);
-                        } else {
-                            leftAdd.endPosition = common[i].rightEndPosition;
-                        }
-                    } else {
-                        if (rightAdd) {
-                            rightAdd.position = common[i].rightPosition;
-                        } else {
-                            addEdit(added, common[i].rightPosition, common[i].rightEndPosition);
-                        }
+                        addEdit(_deleted, _common[i].leftPosition, _common[i].leftEndPosition);
                     }
 
-                    common.splice(i, 1);
+                    if (leftAdd && rightAdd) {
+                        leftAdd.endPosition = rightAdd.endPosition;
+                        removeEdit(_added, rightAdd);
+                    } else if (leftAdd) {
+                        leftAdd.endPosition = _common[i].rightEndPosition;
+                    } else if (rightAdd) {
+                        rightAdd.position = _common[i].rightPosition;
+                    } else {
+                        addEdit(_added, _common[i].rightPosition, _common[i].rightEndPosition);
+                    }
+
+                    _common.splice(i, 1);
                 }
+            }
+        } while (merged)
+    };
+
+    var mergeAdjacentCommon = function () {
+        for (var i = 0; i < _common.length; i++) {
+            if (i + 1 < _common.length
+                    && _common[i].leftEndPosition + 1 === _common[i + 1].leftPosition
+                    && _common[i].rightEndPosition + 1 === _common[i + 1].rightPosition) {
+                _common[i].leftEndPosition = _common[i + 1].leftEndPosition;
+                _common[i].rightEndPosition = _common[i + 1].rightEndPosition;
+                _common.splice(i + 1, 1);
+                i--;
             }
         }
     };
@@ -159,8 +154,8 @@ SourceDiff.LineDiff = function() {
         addInsert: addInsert,
         addCommon: addCommon,
         cleanUp: cleanUp,
-        added: added,
-        deleted: deleted,
-        common: common
+        added: _added,
+        deleted: _deleted,
+        common: _common
     };
 };
