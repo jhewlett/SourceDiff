@@ -25,7 +25,7 @@ SourceDiff.DiffFormatter = function(diff) {
         var modifiedLines = [];
 
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (results.modifiedLeft.contains(i) && results.modifiedRight.contains(i) && text1Lines[i] != ' ' && text2Lines[i] != ' ' ) {
+            if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {// && text1Lines[i] != ' ' && text2Lines[i] != ' ' ) {
                 var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
                 lineDiff.cleanUp();
 
@@ -101,7 +101,7 @@ SourceDiff.DiffFormatter = function(diff) {
 
         for (var i = startingPos; i < text1EndingPos; i++) {
             var modifiedLine = contains(modifiedLines, i);
-            if (modifiedLine) {
+            if (modifiedLine && results.modifiedLeft.contains(i)) {
                 deletedText += '<span class="modified">';
                 var startIndex = 0;
                 for (var j = 0; j < modifiedLine.results.deleted.length; j++) {
@@ -142,7 +142,7 @@ SourceDiff.DiffFormatter = function(diff) {
 
         for (var i = startingPos; i < text2EndingPos; i++) {
             var modifiedLine = contains(modifiedLines, i);
-            if (modifiedLine) {
+            if (modifiedLine && results.modifiedRight.contains(i)) {
                 addedText += '<span class="modified">';
                 var startIndex = 0;
                 for (var j = 0; j < modifiedLine.results.added.length; j++) {
