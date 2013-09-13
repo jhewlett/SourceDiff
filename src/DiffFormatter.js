@@ -13,27 +13,27 @@ SourceDiff.DiffFormatter = function(diff) {
 
         findModifiedLines(text1Lines, text2Lines, results);
 
-        var modifiedLines = diffModifiedLines(text1Lines, text2Lines, results);
+        var lineDiffs = diffModifiedLines(text1Lines, text2Lines, results);
 
-        var deletedText = formatLeftText(results, text1Lines, modifiedLines);
-        var addedText = formatRightText(results, text2Lines, modifiedLines);
+        var deletedText = formatLeftText(results, text1Lines, lineDiffs);
+        var addedText = formatRightText(results, text2Lines, lineDiffs);
 
         return [deletedText, addedText];
     };
 
     var diffModifiedLines = function(text1Lines, text2Lines, results) {
-        var modifiedLines = [];
+        var lineDiffs = new SourceDiff.EditSet();
 
         for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {// && text1Lines[i] != ' ' && text2Lines[i] != ' ' ) {
+            if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {
                 var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
                 lineDiff.cleanUp();
 
-                modifiedLines.push({line: i, results: lineDiff});
+                lineDiffs.addValue(i, lineDiff);
             }
         }
 
-        return modifiedLines;
+        return lineDiffs;
     };
 
     var escapeHtml = function(string) {
@@ -93,21 +93,21 @@ SourceDiff.DiffFormatter = function(diff) {
         return [text1Lines, text2Lines];
     };
 
-    var formatLeftText = function (results, text1Lines, modifiedLines) {
+    var formatLeftText = function (results, text1Lines, lineDiffs) {
         var deletedText = '';
 
         var startingPos = getStartingPos(results);
         var text1EndingPos = getEndingPos(results, text1Lines);
 
         for (var i = startingPos; i < text1EndingPos; i++) {
-            var modifiedLine = contains(modifiedLines, i);
-            if (modifiedLine && results.modifiedLeft.contains(i)) {
+            if (lineDiffs.contains(i) && results.modifiedLeft.contains(i)) {
+                var lineDiff = lineDiffs.get(i);
                 deletedText += '<span class="modified">';
                 var startIndex = 0;
-                for (var j = 0; j < modifiedLine.results.deleted.length; j++) {
-                    deletedText += escapeHtml(text1Lines[i].substring(startIndex, modifiedLine.results.deleted[j].position));
-                    startIndex = modifiedLine.results.deleted[j].endPosition + 1;
-                    deletedText += '<span class="modified-light">' + escapeHtml(text1Lines[i].substring(modifiedLine.results.deleted[j].position, startIndex))
+                for (var j = 0; j < lineDiff.deleted.length; j++) {
+                    deletedText += escapeHtml(text1Lines[i].substring(startIndex, lineDiff.deleted[j].position));
+                    startIndex = lineDiff.deleted[j].endPosition + 1;
+                    deletedText += '<span class="modified-light">' + escapeHtml(text1Lines[i].substring(lineDiff.deleted[j].position, startIndex))
                         + '</span>';
                 }
 
@@ -125,30 +125,21 @@ SourceDiff.DiffFormatter = function(diff) {
         return deletedText;
     };
 
-    var contains = function(array, line) {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i].line === line) {
-                return array[i];
-            }
-        }
-        return false;
-    };
-
-    var formatRightText = function (results, text2Lines, modifiedLines) {
+    var formatRightText = function (results, text2Lines, lineDiffs) {
         var addedText = '';
 
         var startingPos = getStartingPos(results);
         var text2EndingPos = getEndingPos(results, text2Lines);
 
         for (var i = startingPos; i < text2EndingPos; i++) {
-            var modifiedLine = contains(modifiedLines, i);
-            if (modifiedLine && results.modifiedRight.contains(i)) {
+            if (lineDiffs.contains(i) && results.modifiedRight.contains(i)) {
+                var lineDiff = lineDiffs.get(i);
                 addedText += '<span class="modified">';
                 var startIndex = 0;
-                for (var j = 0; j < modifiedLine.results.added.length; j++) {
-                    addedText += escapeHtml(text2Lines[i].substring(startIndex, modifiedLine.results.added[j].position));
-                    startIndex = modifiedLine.results.added[j].endPosition + 1;
-                    addedText += '<span class="modified-light">' + escapeHtml(text2Lines[i].substring(modifiedLine.results.added[j].position, startIndex))
+                for (var j = 0; j < lineDiff.added.length; j++) {
+                    addedText += escapeHtml(text2Lines[i].substring(startIndex, lineDiff.added[j].position));
+                    startIndex = lineDiff.added[j].endPosition + 1;
+                    addedText += '<span class="modified-light">' + escapeHtml(text2Lines[i].substring(lineDiff.added[j].position, startIndex))
                         + '</span>';
                 }
 

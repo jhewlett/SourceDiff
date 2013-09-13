@@ -7,13 +7,21 @@ SourceDiff.EditSet = function() {
         _set[line.toString()] = true;
     };
 
+    var addValue = function(line, value) {
+        _set[line.toString()] = value;
+    };
+
     var remove = function(line) {
-        _set[line.toString()] = false;
+        _set[line.toString()] = undefined;
     };
 
     var count = function() {
         return all().length;
     };
+
+    var get = function(line) {
+        return _set[line];
+    }
 
     var sortIntegers = function(a, b) {
         return a - b;
@@ -32,19 +40,20 @@ SourceDiff.EditSet = function() {
     };
 
     var contains = function(lineNumber) {
-        return _set[lineNumber.toString()] === true;
+        return _set[lineNumber.toString()] !== undefined;
     };
 
     var updateNumbers = function(lineNumber) {
         var newSet = {};
 
         for (var prop in _set) {
-            if (_set[prop]) {
+            var value = _set[prop];
+            if (value) {
                 var parsed = parseInt(prop);
                 if (parsed >= lineNumber) {
-                    newSet[(parsed + 1).toString()] = true;
+                    newSet[(parsed + 1).toString()] = value;
                 } else {
-                    newSet[parsed.toString()] = true;
+                    newSet[parsed.toString()] = value;
                 }
             }
         }
@@ -54,6 +63,8 @@ SourceDiff.EditSet = function() {
 
     return {
         add: add,
+        addValue: addValue,
+        get: get,
         remove: remove,
         count: count,
         all: all,
