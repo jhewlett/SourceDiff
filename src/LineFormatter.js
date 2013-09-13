@@ -11,20 +11,7 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
         for (var i = startingPos; i < text1EndingPos; i++) {
             if (lineDiffs.contains(i) && results.modifiedLeft.contains(i)) {
                 var lineDiff = lineDiffs.get(i);
-                deletedText += '<span class="modified">';
-                var startIndex = 0;
-                for (var j = 0; j < lineDiff.deleted.length; j++) {
-                    deletedText += escapeHtml(text1Lines[i].substring(startIndex, lineDiff.deleted[j].position));
-                    startIndex = lineDiff.deleted[j].endPosition + 1;
-                    deletedText += '<span class="modified-light">' + escapeHtml(text1Lines[i].substring(lineDiff.deleted[j].position, startIndex))
-                        + '</span>';
-                }
-
-                if (startIndex < text1Lines[i].length) {
-                    deletedText += escapeHtml(text1Lines[i].substring(startIndex, text1Lines[i].length));
-                }
-
-                deletedText += '</span><br>';
+                deletedText += appendModifiedLine(text1Lines[i], lineDiff.deleted);
             } else {
                 var className = getClassNameLeft(results, i);
                 deletedText += appendLine(className, text1Lines[i]);
@@ -43,26 +30,32 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
         for (var i = startingPos; i < text2EndingPos; i++) {
             if (lineDiffs.contains(i) && results.modifiedRight.contains(i)) {
                 var lineDiff = lineDiffs.get(i);
-                addedText += '<span class="modified">';
-                var startIndex = 0;
-                for (var j = 0; j < lineDiff.added.length; j++) {
-                    addedText += escapeHtml(text2Lines[i].substring(startIndex, lineDiff.added[j].position));
-                    startIndex = lineDiff.added[j].endPosition + 1;
-                    addedText += '<span class="modified-light">' + escapeHtml(text2Lines[i].substring(lineDiff.added[j].position, startIndex))
-                        + '</span>';
-                }
-
-                if (startIndex < text2Lines[i].length) {
-                    addedText += escapeHtml(text2Lines[i].substring(startIndex, text2Lines[i].length));
-                }
-
-                addedText += '</span><br>';
+                addedText += appendModifiedLine(text2Lines[i], lineDiff.added);
             } else {
                 var className = getClassNameRight(results, i);
                 addedText += appendLine(className, text2Lines[i]);
             }
         }
         return addedText;
+    };
+
+    var appendModifiedLine = function(textLine, lineEdits) {
+        var  formattedText = '<span class="modified">';
+        var startIndex = 0;
+        for (var j = 0; j < lineEdits.length; j++) {
+            formattedText += escapeHtml(textLine.substring(startIndex, lineEdits[j].position));
+            startIndex = lineEdits[j].endPosition + 1;
+            formattedText += '<span class="modified-light">' + escapeHtml(textLine.substring(lineEdits[j].position, startIndex))
+                + '</span>';
+        }
+
+        if (startIndex < textLine.length) {
+            formattedText += escapeHtml(textLine.substring(startIndex, textLine.length));
+        }
+
+        formattedText += '</span><br>';
+
+        return formattedText;
     };
 
     var getStartingPos = function(results) {
