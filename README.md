@@ -13,4 +13,4 @@ Each side has its own set of scrollbars, but scrolling one will scroll the other
 
 Future enhancements:
 + Syntax highlighting
-+ Character differences for modified lines
++ Buttons to navigate to previous and next difference
