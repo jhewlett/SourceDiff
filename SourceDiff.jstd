@@ -5,6 +5,7 @@ load:
   - src/Diff.js
   - src/DiffFormatter.js
   - src/LineDiff.js
+  - src/LineFormatter.js
 
 test:
   - test/*.js
