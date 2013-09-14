@@ -23,36 +23,6 @@ SourceDiff.DiffFormatter = function(diff) {
         return [deletedText, addedText];
     };
 
-    var diffModifiedLines = function(text1Lines, text2Lines, results) {
-        var lineDiffs = new SourceDiff.EditSet();
-
-        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {
-                var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
-                lineDiff.cleanUp();
-
-                lineDiffs.addValue(i, lineDiff);
-            }
-        }
-
-        return lineDiffs;
-    };
-
-    var findModifiedLines = function(text1Lines, text2Lines, results) {
-        results.modifiedRight = new SourceDiff.EditSet();
-        results.modifiedLeft = new SourceDiff.EditSet();
-        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
-            if (results.added.contains(i) && results.deleted.contains(i)) {
-                results.modifiedLeft.add(i);
-                results.modifiedRight.add(i);
-            } else if (results.added.contains(i) && results.modifiedRight.contains(i - 1)) {
-                results.modifiedRight.add(i);
-            } else if (results.deleted.contains(i) && results.modifiedLeft.contains(i - 1)) {
-                results.modifiedLeft.add(i);
-            }
-        }
-    };
-
     var lineUpText = function(text1, text2, results) {
         var text1Lines = _diff.split(text1);
         var text2Lines = _diff.split(text2);
@@ -76,6 +46,36 @@ SourceDiff.DiffFormatter = function(diff) {
         }
 
         return [text1Lines, text2Lines];
+    };
+
+    var findModifiedLines = function(text1Lines, text2Lines, results) {
+        results.modifiedRight = new SourceDiff.EditSet();
+        results.modifiedLeft = new SourceDiff.EditSet();
+        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+            if (results.added.contains(i) && results.deleted.contains(i)) {
+                results.modifiedLeft.add(i);
+                results.modifiedRight.add(i);
+            } else if (results.added.contains(i) && results.modifiedRight.contains(i - 1)) {
+                results.modifiedRight.add(i);
+            } else if (results.deleted.contains(i) && results.modifiedLeft.contains(i - 1)) {
+                results.modifiedLeft.add(i);
+            }
+        }
+    };
+
+    var diffModifiedLines = function(text1Lines, text2Lines, results) {
+        var lineDiffs = new SourceDiff.EditSet();
+
+        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+            if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {
+                var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
+                lineDiff.cleanUp();
+
+                lineDiffs.addValue(i, lineDiff);
+            }
+        }
+
+        return lineDiffs;
     };
 
     return {

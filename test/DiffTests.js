@@ -274,3 +274,23 @@ test("not an infinite loop", function() {
 
     lineDiff.cleanUp();
 });
+
+test("Line diff ignores trailing whitespace", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('pat',
+        'path    ');
+
+    assertEquals([{position: 3, endPosition: 3}], lineDiff.added);
+    assertEquals([], lineDiff.deleted);
+});
+
+test("Line diff ignores leading whitespace", function() {
+    var diff = new SourceDiff.Diff(true);
+
+    var lineDiff = diff.lineDiff('pat',
+        '  path');
+
+    assertEquals([{position: 5, endPosition: 5}], lineDiff.added);
+    assertEquals([], lineDiff.deleted);
+});

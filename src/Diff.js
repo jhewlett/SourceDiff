@@ -3,14 +3,24 @@ var SourceDiff = SourceDiff || {};
 SourceDiff.Diff = function(ignoreLeadingWS) {
     var _ignoreLeadingWS = ignoreLeadingWS;
 
-    var trimWhiteSpace = function(str) {
+    var trimTrailingWhiteSpace = function(str) {
         if (str) {
-            str = str.replace(/\s\s*$/, '');
-
-            if (_ignoreLeadingWS) {
-                str = str.replace(/^\s\s*/, '');
-            }
+            return str.replace(/\s\s*$/, '');
         }
+        return str;
+    };
+
+    var checkTrimLeadingWhiteSpace = function(str) {
+        if (str && _ignoreLeadingWS) {
+            return str.replace(/^\s\s*/, '');
+        }
+        return str;
+    };
+
+    var trimWhiteSpace = function(str) {
+        str = trimTrailingWhiteSpace(str);
+        str = checkTrimLeadingWhiteSpace(str);
+
         return str;
     };
 
@@ -19,30 +29,39 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     };
 
     var lineDiff = function(s1, s2) {
-        var matrix = createMatrix(s1, s2);
+        var s1Trimmed = checkTrimLeadingWhiteSpace(s1);
+        var s2Trimmed = checkTrimLeadingWhiteSpace(s2);
 
-        fillMatrix(s1, s2, matrix);
+        var s1Offset = s1.length - s1Trimmed.length;
+        var s2Offset = s2.length - s2Trimmed.length;
+
+        s1Trimmed = trimTrailingWhiteSpace(s1Trimmed);
+        s2Trimmed = trimTrailingWhiteSpace(s2Trimmed);
+
+        var matrix = createMatrix(s1Trimmed, s2Trimmed);
+
+        fillMatrix(s1Trimmed, s2Trimmed, matrix);
 
         var diff = new SourceDiff.LineDiff();
 
-        var i = s1.length;
-        var j = s2.length;
+        var i = s1Trimmed.length;
+        var j = s2Trimmed.length;
 
         while (i >= 0 && j >= 0) {
-            if (s1[i - 1] === s2[j - 1]) {
-                if (s1[i - 1]) {
-                    diff.addCommon(i - 1, j - 1, s1[i - 1].length);
+            if (s1Trimmed[i - 1] === s2Trimmed[j - 1]) {
+                if (s1Trimmed[i - 1]) {
+                    diff.addCommon(s1Offset + i - 1, s2Offset + j - 1, s1Trimmed[i - 1].length);
                 }
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
-                if (s2[j - 1].length > 0) {
-                    diff.addInsert(j - 1, s2[j - 1].length);
+                if (s2Trimmed[j - 1].length > 0) {
+                    diff.addInsert(s2Offset + j - 1, s2Trimmed[j - 1].length);
                 }
                 j--;
             } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
-                if (s1[i - 1].length > 0) {
-                    diff.addDelete(i - 1, s1[i - 1].length);
+                if (s1Trimmed[i - 1].length > 0) {
+                    diff.addDelete(s1Offset + i - 1, s1Trimmed[i - 1].length);
                 }
                 i--;
             }

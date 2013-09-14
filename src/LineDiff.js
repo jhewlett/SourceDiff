@@ -33,19 +33,15 @@ SourceDiff.LineDiff = function() {
         return edit.endPosition - edit.position + 1;
     };
 
-    var commonLength = function(edit) {
-        return edit.leftEndPosition - edit.leftPosition + 1;
-    };
-
     var cleanUp = function() {
         mergeAdjacent(_added);
         mergeAdjacent(_deleted);
         mergeAdjacentCommon();
 
         do {
-            var merged = false;
+            var didMerge = false;
             for (var i = 0; i < _common.length; i++) {
-                var equalityLength = commonLength(_common[i]);
+                var equalityLength = _common[i].leftEndPosition - _common[i].leftPosition;
 
                 var leftDelete = findEditWithEndingPosition(_deleted, _common[i].leftPosition - 1);
                 var rightDelete = findEditWithPosition(_deleted, _common[i].leftEndPosition + 1);
@@ -54,7 +50,7 @@ SourceDiff.LineDiff = function() {
                 var rightAdd = findEditWithPosition(_added, _common[i].rightEndPosition + 1);
                 if (editLength(leftDelete) + editLength(leftAdd) >= equalityLength
                         && editLength(rightDelete) + editLength(rightAdd) >= equalityLength) {
-                    merged = true;
+                    didMerge = true;
                     if (leftDelete && rightDelete) {
                         leftDelete.endPosition = rightDelete.endPosition;
                         removeEdit(_deleted, rightDelete);
@@ -80,7 +76,7 @@ SourceDiff.LineDiff = function() {
                     _common.splice(i, 1);
                 }
             }
-        } while (merged)
+        } while (didMerge)
     };
 
     var mergeAdjacentCommon = function () {
