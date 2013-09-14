@@ -41,7 +41,7 @@ SourceDiff.LineDiff = function() {
         do {
             var didMerge = false;
             for (var i = 0; i < _common.length; i++) {
-                var equalityLength = _common[i].leftEndPosition - _common[i].leftPosition;
+                var equalityLength = _common[i].leftEndPosition - _common[i].leftPosition + 1;
 
                 var leftDelete = findEditWithEndingPosition(_deleted, _common[i].leftPosition - 1);
                 var rightDelete = findEditWithPosition(_deleted, _common[i].leftEndPosition + 1);
