@@ -114,7 +114,7 @@ body {
     });
 
     function doDiff() {
-        var diff = new SourceDiff.Diff(true);   //don't ignore leading whitespace
+        var diff = new SourceDiff.Diff(true);   //ignore leading whitespace
         var formatter = new SourceDiff.DiffFormatter(diff);
 
         var text1 = document.getElementById('original').value;

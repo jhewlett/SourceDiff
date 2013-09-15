@@ -294,3 +294,14 @@ test("Line diff ignores leading whitespace", function() {
     assertEquals([{position: 5, endPosition: 5}], lineDiff.added);
     assertEquals([], lineDiff.deleted);
 });
+
+test("Line diff bug with orphaned common letter", function() {
+    var diff = new SourceDiff.Diff(true);
+
+    var lineDiff = diff.lineDiff('deleted.unshift', 'diff.addDelete');
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 13}], lineDiff.added);
+    assertEquals([{position: 0, endPosition: 14}], lineDiff.deleted);
+    assertEquals([], lineDiff.common);
+});
