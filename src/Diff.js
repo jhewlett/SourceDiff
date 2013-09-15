@@ -50,18 +50,18 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         while (i >= 0 && j >= 0) {
             if (s1Trimmed[i - 1] === s2Trimmed[j - 1]) {
                 if (s1Trimmed[i - 1]) {
-                    diff.addCommon(s1Offset + i - 1, s2Offset + j - 1, s1Trimmed[i - 1].length);
+                    diff.addCommon(s1Offset + i - 1, s2Offset + j - 1);
                 }
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
                 if (s2Trimmed[j - 1].length > 0) {
-                    diff.addInsert(s2Offset + j - 1, s2Trimmed[j - 1].length);
+                    diff.addInsert(s2Offset + j - 1);
                 }
                 j--;
             } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
                 if (s1Trimmed[i - 1].length > 0) {
-                    diff.addDelete(s1Offset + i - 1, s1Trimmed[i - 1].length);
+                    diff.addDelete(s1Offset + i - 1);
                 }
                 i--;
             }

@@ -5,25 +5,25 @@ SourceDiff.LineDiff = function() {
     var _deleted = [];
     var _common = [];
 
-    var addCommon = function(leftPosition, rightPosition, length) {
+    var addCommon = function(leftPosition, rightPosition) {
         _common.unshift({
             leftPosition: leftPosition,
-            leftEndPosition: leftPosition + length - 1,
+            leftEndPosition: leftPosition,
             rightPosition: rightPosition,
-            rightEndPosition: rightPosition + length - 1
+            rightEndPosition: rightPosition
         });
     };
 
-    var addDelete = function(position, length) {
+    var addDelete = function(position) {
         _deleted.unshift({
             position: position,
-            endPosition: position + length - 1});
+            endPosition: position});
     };
 
-    var addInsert = function(position, length) {
+    var addInsert = function(position) {
         _added.unshift({
             position: position,
-            endPosition: position + length - 1});
+            endPosition: position});
     };
 
     var editLength = function(edit) {
