@@ -98,18 +98,17 @@ SourceDiff.LineDiff = function() {
             endPosition: endPosition
         };
 
-        for (var i = 0; i < edits.length; i++) {
-            if (i === 0 && position < edits[i].position) {
-                edits.unshift(newEdit);
-                break;
-            } else if (position > edits[i].position) {
-                edits.splice(i + 1, 0, newEdit);
-                break;
-            }
-        }
-
         if (edits.length === 0) {
             edits.push(newEdit);
+        } else if (position < edits[0].position) {
+            edits.unshift(newEdit);
+        } else {
+            for (var i = edits.length - 1; i >= 1; i--) {
+                if (position > edits[i].position) {
+                    edits.splice(i + 1, 0, newEdit);
+                    break;
+                }
+            }
         }
     };
 

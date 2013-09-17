@@ -305,3 +305,13 @@ test("Line diff bug with orphaned common letter", function() {
     assertEquals([{position: 0, endPosition: 14}], lineDiff.deleted);
     assertEquals([], lineDiff.common);
 });
+
+test("LineDiff.addEdit", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('createMatrix(s1, s2);', 'trim(s1Lines, s2Lines);');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 7}, {position: 11, endPosition: 11}, {position: 15, endPosition: 18}], lineDiff.deleted);
+});
