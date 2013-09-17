@@ -315,3 +315,27 @@ test("LineDiff.addEdit", function() {
 
     assertEquals([{position: 0, endPosition: 7}, {position: 11, endPosition: 11}, {position: 15, endPosition: 18}], lineDiff.deleted);
 });
+
+test("LineDiff correctly merges edits and removes semantic chaff", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var lineDiff = diff.lineDiff('deletedText += "<br>";', 'for(var e = 0; e < results.added.length; e++) {');
+
+    lineDiff.cleanUp();
+
+    assertEquals([{position: 0, endPosition: 21}], lineDiff.deleted);
+    assertEquals([{position: 0, endPosition: 46}], lineDiff.added);
+    assertEquals([], lineDiff.common);
+});
+
+test("LineDiff with blank lines", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var diffFormatter = new SourceDiff.DiffFormatter(diff);
+
+    var formatted = diffFormatter.formattedDiff('\n', '*\n');
+
+    assertEquals('["<span class=\"deleted\"> </span><br> <br>","<span class=\"modified\"><span class=\"modified-light\">*</span></span><br> <br>"]', formatted);
+});
+
+//I need a good way to handle blank lines that get padded with ' '.

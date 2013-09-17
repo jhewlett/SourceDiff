@@ -48,7 +48,7 @@ SourceDiff.LineDiff = function() {
 
                 var leftAdd = findEditWithEndingPosition(_added, _common[i].rightPosition - 1);
                 var rightAdd = findEditWithPosition(_added, _common[i].rightEndPosition + 1);
-                if (editLength(leftDelete) + editLength(leftAdd) >= equalityLength
+                if (equalityLength <= 8 && editLength(leftDelete) + editLength(leftAdd) >= equalityLength
                         && editLength(rightDelete) + editLength(rightAdd) >= equalityLength) {
                     didMerge = true;
                     if (leftDelete && rightDelete) {
@@ -103,7 +103,7 @@ SourceDiff.LineDiff = function() {
         } else if (position < edits[0].position) {
             edits.unshift(newEdit);
         } else {
-            for (var i = edits.length - 1; i >= 1; i--) {
+            for (var i = edits.length - 1; i >= 0; i--) {
                 if (position > edits[i].position) {
                     edits.splice(i + 1, 0, newEdit);
                     break;

@@ -44,7 +44,7 @@ textarea {
 
 .scroll {
     height: 600px;
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: auto;
 }
 
