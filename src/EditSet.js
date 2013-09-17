@@ -4,15 +4,15 @@ SourceDiff.EditSet = function() {
     var _set = {};
 
     var add = function(line) {
-        _set[line.toString()] = true;
+        _set[line] = true;
     };
 
     var addValue = function(line, value) {
-        _set[line.toString()] = value;
+        _set[line] = value;
     };
 
     var remove = function(line) {
-        _set[line.toString()] = undefined;
+        _set[line] = undefined;
     };
 
     var count = function() {
@@ -40,7 +40,7 @@ SourceDiff.EditSet = function() {
     };
 
     var contains = function(lineNumber) {
-        return _set[lineNumber.toString()] !== undefined;
+        return _set[lineNumber] !== undefined;
     };
 
     var updateNumbers = function(lineNumber) {
@@ -51,9 +51,9 @@ SourceDiff.EditSet = function() {
             if (value) {
                 var parsed = parseInt(prop);
                 if (parsed >= lineNumber) {
-                    newSet[(parsed + 1).toString()] = value;
+                    newSet[parsed + 1] = value;
                 } else {
-                    newSet[parsed.toString()] = value;
+                    newSet[parsed] = value;
                 }
             }
         }
