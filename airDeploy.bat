@@ -1,0 +1,1 @@
+adt -package -storetype pkcs12 -keystore selfCert.p12 SourceDiff.air air\SourceDiff-app.xml -C air diffCmd.html AIRAliases.js -C lib bootstrap.min.css -C src Diff.js DiffFormatter.js EditSet.js LineDiff.js LineFormatter.js style.css

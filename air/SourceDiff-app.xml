@@ -1,0 +1,12 @@
+<application xmlns="http://ns.adobe.com/air/application/3.8">
+    <id>SourceDiff</id>
+    <versionNumber>0.1</versionNumber>
+    <filename>SourceDiff</filename>
+    <initialWindow>
+        <content>diffCmd.html</content>
+        <visible>true</visible>
+        <width>1300</width>
+		<height>750</height>
+		<title>SourceDiff</title>
+    </initialWindow>
+</application>

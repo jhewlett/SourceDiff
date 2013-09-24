@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diff test</title>
+    <link href="bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="AIRAliases.js" type="text/javascript"></script>
+</head>
+<body onload="appLoad()">
+<div class="wrapper">
+    <div class="left">
+        <h3>Original</h3>
+    </div>
+    <div class="right">
+        <h3>Edit</h3>
+    </div>
+</div>
+<div class="wrapper">
+    <div class="left scroll" id="scrollLeft">
+        <pre id="original_result"></pre>
+    </div>
+    <div class="right scroll" id="scrollRight">
+        <pre id="edited_result"></pre>
+    </div>
+</div>
+<script src="LineDiff.js"></script>
+<script src="EditSet.js"></script>
+<script src="Diff.js"></script>
+<script src="DiffFormatter.js"></script>
+<script src="LineFormatter.js"></script>
+<script>
+    function appLoad() {
+        air.NativeApplication.nativeApplication.addEventListener(air.InvokeEvent.INVOKE, onInvoke);
+
+        var scrollLeft = document.getElementById('scrollLeft');
+        var scrollRight = document.getElementById('scrollRight');
+
+        scrollLeft.addEventListener('scroll', function() {
+            scrollRight.scrollLeft = scrollLeft.scrollLeft;
+            scrollRight.scrollTop = scrollLeft.scrollTop;
+        });
+
+        scrollRight.addEventListener('scroll', function() {
+            scrollLeft.scrollLeft = scrollRight.scrollLeft;
+            scrollLeft.scrollTop = scrollRight.scrollTop;
+        });
+    }
+
+    function onInvoke(event) {
+        var original = readFile(event.arguments[0]);
+        var edit = readFile(event.arguments[1]);
+
+        doDiff(original, edit);
+    }
+
+    function readFile(filePath) {
+        var file = air.File.applicationDirectory.resolvePath(filePath);
+        var fileStream = new air.FileStream();
+        fileStream.open(file, air.FileMode.READ);
+        var contents = fileStream.readUTFBytes(fileStream.bytesAvailable);
+        fileStream.close();
+
+        return contents;
+    }
+
+    function doDiff(original, edited) {
+        var diff = new SourceDiff.Diff(true);
+        var formatter = new SourceDiff.DiffFormatter(diff);
+
+        var results = formatter.formattedDiff(original, edited);
+
+        document.getElementById('original_result').innerHTML = results[0];
+        document.getElementById('edited_result').innerHTML = results[1];
+    }
+</script>
+</body>
+</html>
