@@ -30,6 +30,8 @@
 <script src="LineFormatter.js"></script>
 <script>
     function appLoad() {
+        window.nativeWindow.maximize();
+
         air.NativeApplication.nativeApplication.addEventListener(air.InvokeEvent.INVOKE, onInvoke);
 
         var scrollLeft = document.getElementById('scrollLeft');
