@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Diff test</title>
+    <title>SourceDiff</title>
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="style.css" rel="stylesheet" type="text/css">
     <script src="AIRAliases.js" type="text/javascript"></script>
@@ -47,14 +47,14 @@
     }
 
     function onInvoke(event) {
-        var original = readFile(event.arguments[0]);
-        var edit = readFile(event.arguments[1]);
+        var original = readFile(event.currentDirectory, event.arguments[0]);
+        var edit = readFile(event.currentDirectory, event.arguments[1]);
 
         doDiff(original, edit);
     }
 
-    function readFile(filePath) {
-        var file = air.File.applicationDirectory.resolvePath(filePath);
+    function readFile(currentDirectory, filePath) {
+        var file = currentDirectory.resolvePath(filePath);
         var fileStream = new air.FileStream();
         fileStream.open(file, air.FileMode.READ);
         var contents = fileStream.readUTFBytes(fileStream.bytesAvailable);
