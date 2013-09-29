@@ -1,6 +1,6 @@
 <application xmlns="http://ns.adobe.com/air/application/3.8">
     <id>SourceDiff</id>
-    <versionNumber>0.1.0</versionNumber>
+    <versionNumber>0.2.0</versionNumber>
     <filename>SourceDiff</filename>
     <initialWindow>
         <content>diffCmd.html</content>
