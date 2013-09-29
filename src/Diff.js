@@ -30,8 +30,8 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         var originalTrimmed = checkTrimLeadingWhiteSpace(originalLine);
         var editedTrimmed = checkTrimLeadingWhiteSpace(editedLine);
 
-        var s1Offset = originalLine.length - originalTrimmed.length;
-        var s2Offset = editedLine.length - editedTrimmed.length;
+        var originalOffset = originalLine.length - originalTrimmed.length;
+        var editOffset = editedLine.length - editedTrimmed.length;
 
         originalTrimmed = trimTrailingWhiteSpace(originalTrimmed);
         editedTrimmed = trimTrailingWhiteSpace(editedTrimmed);
@@ -48,18 +48,18 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         while (i >= 0 && j >= 0) {
             if (originalTrimmed[i - 1] === editedTrimmed[j - 1]) {
                 if (originalTrimmed[i - 1]) {
-                    diff.addCommon(s1Offset + i - 1, s2Offset + j - 1);
+                    diff.addCommon(originalOffset + i - 1, editOffset + j - 1);
                 }
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
                 if (editedTrimmed[j - 1].length > 0) {
-                    diff.addInsert(s2Offset + j - 1);
+                    diff.addInsert(editOffset + j - 1);
                 }
                 j--;
             } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
                 if (originalTrimmed[i - 1].length > 0) {
-                    diff.addDelete(s1Offset + i - 1);
+                    diff.addDelete(originalOffset + i - 1);
                 }
                 i--;
             }

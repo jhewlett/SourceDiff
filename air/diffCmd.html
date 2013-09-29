@@ -32,6 +32,9 @@
     function appLoad() {
         window.nativeWindow.maximize();
 
+        maximizeHeight(document.getElementById('scrollLeft'));
+        maximizeHeight(document.getElementById('scrollRight'));
+
         air.NativeApplication.nativeApplication.addEventListener(air.InvokeEvent.INVOKE, onInvoke);
 
         var scrollLeft = document.getElementById('scrollLeft');
@@ -46,6 +49,12 @@
             scrollLeft.scrollLeft = scrollRight.scrollLeft;
             scrollLeft.scrollTop = scrollRight.scrollTop;
         });
+    }
+
+    function maximizeHeight(element) {
+        if (window.innerHeight) {
+            element.style.height = (window.innerHeight - element.offsetTop - 10) + "px";
+        }
     }
 
     function onInvoke(event) {
