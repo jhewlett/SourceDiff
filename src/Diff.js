@@ -28,39 +28,39 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return string.split(/\r?\n/);
     };
 
-    var lineDiff = function(s1, s2) {
-        var s1Trimmed = checkTrimLeadingWhiteSpace(s1);
-        var s2Trimmed = checkTrimLeadingWhiteSpace(s2);
+    var lineDiff = function(originalLine, editedLine) {
+        var originalTrimmed = checkTrimLeadingWhiteSpace(originalLine);
+        var editedTrimmed = checkTrimLeadingWhiteSpace(editedLine);
 
-        var s1Offset = s1.length - s1Trimmed.length;
-        var s2Offset = s2.length - s2Trimmed.length;
+        var s1Offset = originalLine.length - originalTrimmed.length;
+        var s2Offset = editedLine.length - editedTrimmed.length;
 
-        s1Trimmed = trimTrailingWhiteSpace(s1Trimmed);
-        s2Trimmed = trimTrailingWhiteSpace(s2Trimmed);
+        originalTrimmed = trimTrailingWhiteSpace(originalTrimmed);
+        editedTrimmed = trimTrailingWhiteSpace(editedTrimmed);
 
-        var matrix = createMatrix(0, s1Trimmed, s2Trimmed);
+        var matrix = createMatrix(0, originalTrimmed, editedTrimmed);
 
-        fillMatrix(0, s1Trimmed, s2Trimmed, matrix);
+        fillMatrix(0, originalTrimmed, editedTrimmed, matrix);
 
         var diff = new SourceDiff.LineDiff();
 
-        var i = s1Trimmed.length;
-        var j = s2Trimmed.length;
+        var i = originalTrimmed.length;
+        var j = editedTrimmed.length;
 
         while (i >= 0 && j >= 0) {
-            if (s1Trimmed[i - 1] === s2Trimmed[j - 1]) {
-                if (s1Trimmed[i - 1]) {
+            if (originalTrimmed[i - 1] === editedTrimmed[j - 1]) {
+                if (originalTrimmed[i - 1]) {
                     diff.addCommon(s1Offset + i - 1, s2Offset + j - 1);
                 }
                 i--;
                 j--;
             } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
-                if (s2Trimmed[j - 1].length > 0) {
+                if (editedTrimmed[j - 1].length > 0) {
                     diff.addInsert(s2Offset + j - 1);
                 }
                 j--;
             } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
-                if (s1Trimmed[i - 1].length > 0) {
+                if (originalTrimmed[i - 1].length > 0) {
                     diff.addDelete(s1Offset + i - 1);
                 }
                 i--;
