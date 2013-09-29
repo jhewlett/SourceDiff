@@ -70,48 +70,54 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return diff;
     };
 
-    var diff = function(s1, s2) {
-        var s1Lines = split(s1);
-        var s2Lines = split(s2);
-
-        padBlankLines(s1Lines);
-        padBlankLines(s2Lines);
-
-        var prefixLines = trim(s1Lines, s2Lines);
-
-        var matrix = createMatrix(prefixLines, s1Lines, s2Lines);
-
-        fillMatrix(prefixLines, s1Lines, s2Lines, matrix);
-
-        var i = s1Lines.length;
-        var j = s2Lines.length;
+    var findAddsAndDeletes = function (originalLines, editedLines, startPos, matrix) {
+        var i = originalLines.length;
+        var j = editedLines.length;
 
         var added = new SourceDiff.EditSet();
         var deleted = new SourceDiff.EditSet();
 
-        while (i >= prefixLines && j >= prefixLines) {
-            var m = i - prefixLines;
-            var n = j - prefixLines;
-            if (m > 0 && n > 0 && linesAreEqual(s1Lines[i - 1], s2Lines[j - 1])) {
+        while (i >= startPos && j >= startPos) {
+            var m = i - startPos;
+            var n = j - startPos;
+            if (m > 0 && n > 0 && linesAreEqual(originalLines[i - 1], editedLines[j - 1])) {
                 i--;
                 j--;
-            } else if (j >= prefixLines && (i === prefixLines || matrix[m][n - 1] >= matrix[m - 1][n])) {
-                if (j - 1 >= prefixLines && s2Lines[j - 1].length > 0) {
+            } else if (j >= startPos && (i === startPos || matrix[m][n - 1] >= matrix[m - 1][n])) {
+                if (j - 1 >= startPos && editedLines[j - 1].length > 0) {
                     added.add(j - 1);
                 }
                 j--;
-            } else if (i >= prefixLines && (j === prefixLines || matrix[m][n - 1] < matrix[m - 1][n])) {
-                if (i - 1 >= prefixLines && s1Lines[i - 1].length > 0) {
+            } else if (i >= startPos && (j === startPos || matrix[m][n - 1] < matrix[m - 1][n])) {
+                if (i - 1 >= startPos && originalLines[i - 1].length > 0) {
                     deleted.add(i - 1);
                 }
                 i--;
             }
         }
 
-        checkShiftEdits(split(s1), deleted);
-        checkShiftEdits(split(s2), added);
-
         return {added: added, deleted: deleted};
+    };
+
+    var diff = function(originalText, editedText) {
+        var originalLines = split(originalText);
+        var editedLines = split(editedText);
+
+        padBlankLines(originalLines);
+        padBlankLines(editedLines);
+
+        var startPos = trimCommonLines(originalLines, editedLines);
+
+        var matrix = createMatrix(startPos, originalLines, editedLines);
+
+        fillMatrix(startPos, originalLines, editedLines, matrix);
+
+        var results = findAddsAndDeletes(originalLines, editedLines, startPos, matrix);
+
+        checkShiftEdits(split(originalText), results.deleted);
+        checkShiftEdits(split(editedText), results.added);
+
+        return results;
     };
 
     var linesAreEqual = function(line1, line2) {
@@ -154,24 +160,24 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return /^\s*$/.test(line);
     };
 
-    var createMatrix = function(prefixLines, s1Lines, s2Lines) {
+    var createMatrix = function(startPos, originalLines, editedLines) {
         var matrix = [];
-        for (var i = 0; i <= s1Lines.length - prefixLines; i++) {
-            matrix[i] = new Array(s2Lines.length - prefixLines + 1);
+        for (var i = 0; i <= originalLines.length - startPos; i++) {
+            matrix[i] = new Array(editedLines.length - startPos + 1);
             matrix[i][0] = 0;
         }
 
-        for (var j = 1; j <= s2Lines.length - prefixLines; j++) {
+        for (var j = 1; j <= editedLines.length - startPos; j++) {
             matrix[0][j] = 0;
         }
 
         return matrix;
     };
 
-    var fillMatrix = function(prefixLines, s1Lines, s2Lines, matrix) {
-        for (var i = 1; i <= s1Lines.length - prefixLines; i++) {
-            for (var j = 1; j <= s2Lines.length - prefixLines; j++) {
-                if (linesAreEqual(s1Lines[i + prefixLines - 1], s2Lines[j + prefixLines - 1])) {
+    var fillMatrix = function(startPos, originalLines, editedLines, matrix) {
+        for (var i = 1; i <= originalLines.length - startPos; i++) {
+            for (var j = 1; j <= editedLines.length - startPos; j++) {
+                if (linesAreEqual(originalLines[i + startPos - 1], editedLines[j + startPos - 1])) {
                     matrix[i][j] = matrix[i - 1][j - 1] + 1;
                 } else {
                     matrix[i][j] = Math.max(matrix[i][j - 1], matrix[i - 1][j]);
@@ -192,24 +198,28 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         }
     };
 
-    var trim = function(s1Lines, s2Lines) {
-        var prefixLines = 0;
+    var trimCommonLines = function(originalLines, editedLines) {
+        var linesRemaining = function(startPos) {
+            return originalLines.length > startPos && editedLines.length > startPos
+        };
 
-        while (s1Lines.length > prefixLines && s2Lines.length > prefixLines && linesAreEqual(s1Lines[prefixLines], s2Lines[prefixLines])) {
-            prefixLines++;
+        var startPos = 0;
+
+        while (linesRemaining(startPos) && linesAreEqual(originalLines[startPos], editedLines[startPos])) {
+            startPos++;
         }
 
-        while (s1Lines.length > prefixLines && s2Lines.length > prefixLines && linesAreEqual(s1Lines[s1Lines.length - 1], s2Lines[s2Lines.length - 1])) {
-            s1Lines.pop();
-            s2Lines.pop();
+        while (linesRemaining(startPos) && linesAreEqual(originalLines[originalLines.length - 1], editedLines[editedLines.length - 1])) {
+            originalLines.pop();
+            editedLines.pop();
         }
 
-        return prefixLines;
+        return startPos;
     };
 
     return {
         diff: diff,
-        trim: trim,   //exposed for testing
+        trim: trimCommonLines,   //exposed for testing
         padBlankLines: padBlankLines,       //used by DiffFormatter
         lineDiff: lineDiff,
         split: split                    //used by DiffFormatter

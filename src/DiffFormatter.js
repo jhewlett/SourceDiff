@@ -3,55 +3,55 @@ var SourceDiff = SourceDiff || {};
 SourceDiff.DiffFormatter = function(diff) {
     var _diff = diff;
 
-    var formattedDiff = function(text1, text2) {
-        var results = _diff.diff(text1, text2);
+    var formattedDiff = function(originalText, editedText) {
+        var results = _diff.diff(originalText, editedText);
 
-        var lines = lineUpText(text1, text2, results);
+        var lines = lineUpText(originalText, editedText, results);
 
-        var text1Lines = lines[0];
-        var text2Lines = lines[1];
+        var originalLines = lines[0];
+        var editedLines = lines[1];
 
-        findModifiedLines(text1Lines, text2Lines, results);
+        findModifiedLines(originalLines, editedLines, results);
 
-        var lineDiffs = diffModifiedLines(text1Lines, text2Lines, results);
+        var lineDiffs = diffModifiedLines(originalLines, editedLines, results);
 
         var lineFormatter = SourceDiff.LineFormatter(results, lineDiffs);
 
-        var deletedText = lineFormatter.formatLeftText(text1Lines);
-        var addedText = lineFormatter.formatRightText(text2Lines);
+        var deletedText = lineFormatter.formatLeftText(originalLines);
+        var addedText = lineFormatter.formatRightText(editedLines);
 
         return [deletedText, addedText];
     };
 
-    var lineUpText = function(text1, text2, results) {
-        var text1Lines = _diff.split(text1);
-        var text2Lines = _diff.split(text2);
+    var lineUpText = function(originalText, editedText, results) {
+        var originalLines = _diff.split(originalText);
+        var editedLines = _diff.split(editedText);
 
-        _diff.padBlankLines(text1Lines);
-        _diff.padBlankLines(text2Lines);
+        _diff.padBlankLines(originalLines);
+        _diff.padBlankLines(editedLines);
 
         results.paddingLeft = new SourceDiff.EditSet();
         results.paddingRight = new SourceDiff.EditSet();
 
-        for (var i = 0; i < Math.max(text1Lines.length, text2Lines.length); i++) {
+        for (var i = 0; i < Math.max(originalLines.length, editedLines.length); i++) {
             if (!results.deleted.contains(i) && results.added.contains(i)) {
-                text1Lines.splice(i, 0, ' ');
+                originalLines.splice(i, 0, ' ');
                 results.deleted.updateNumbers(i);
                 results.paddingLeft.add(i);
             } else if (results.deleted.contains(i) && !results.added.contains(i)) {
-                text2Lines.splice(i, 0, ' ');
+                editedLines.splice(i, 0, ' ');
                 results.added.updateNumbers(i);
                 results.paddingRight.add(i);
             }
         }
 
-        return [text1Lines, text2Lines];
+        return [originalLines, editedLines];
     };
 
-    var findModifiedLines = function(text1Lines, text2Lines, results) {
+    var findModifiedLines = function(originalLines, editedLines, results) {
         results.modifiedRight = new SourceDiff.EditSet();
         results.modifiedLeft = new SourceDiff.EditSet();
-        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+        for (var i = 0; i < originalLines.length && i < editedLines.length; i++) {
             if (results.added.contains(i) && results.deleted.contains(i)) {
                 results.modifiedLeft.add(i);
                 results.modifiedRight.add(i);
@@ -63,12 +63,12 @@ SourceDiff.DiffFormatter = function(diff) {
         }
     };
 
-    var diffModifiedLines = function(text1Lines, text2Lines, results) {
+    var diffModifiedLines = function(originalLines, editedLines, results) {
         var lineDiffs = new SourceDiff.EditSet();
 
-        for (var i = 0; i < text1Lines.length && i < text2Lines.length; i++) {
+        for (var i = 0; i < originalLines.length && i < editedLines.length; i++) {
             if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {
-                var lineDiff = _diff.lineDiff(text1Lines[i], text2Lines[i]);
+                var lineDiff = _diff.lineDiff(originalLines[i], editedLines[i]);
                 lineDiff.cleanUp();
 
                 lineDiffs.addValue(i, lineDiff);
