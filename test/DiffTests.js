@@ -9,8 +9,6 @@ test("Trim trims any common prefixes", function() {
     var prefixCount = diff.trim(arr1, arr2);
 
     assertEquals(3, prefixCount);
-    assertEquals(["hat"], arr1);
-    assertEquals(["bag"], arr2);
 });
 
 test("Trim handles identical input", function() {
@@ -18,10 +16,9 @@ test("Trim handles identical input", function() {
     var arr2 = ['cat'];
 
     var diff = new SourceDiff.Diff(false);
-    diff.trim(arr1, arr2);
+    var prefix = diff.trim(arr1, arr2);
 
-    assertEquals([], arr1);
-    assertEquals([], arr2);
+    assertEquals(1, prefix);
 });
 
 test("Trim handles common suffixes", function() {
@@ -165,6 +162,17 @@ test("When filling the matrix, whitespace is ignored", function() {
 
     assertEquals([], result.added.all());
     assertEquals([0,3], result.deleted.all());
+});
+
+test("Delete shows up", function() {
+    var text1 = "word\nword";
+    var text2 = "word";
+
+    var diff = new SourceDiff.Diff(false);
+    var result = diff.diff(text1, text2);
+
+    assertEquals([], result.added.all());
+    assertEquals([1], result.deleted.all());
 });
 
 test("character diff for line", function() {
@@ -335,7 +343,5 @@ test("LineDiff with blank lines", function() {
 
     var formatted = diffFormatter.formattedDiff('\n', '*\n');
 
-    assertEquals('["<span class=\"deleted\"> </span><br> <br>","<span class=\"modified\"><span class=\"modified-light\">*</span></span><br> <br>"]', formatted);
+    assertEquals(["<span class=\"modified\"> </span><br> <br>","<span class=\"modified\"><span class=\"modified-light\">*</span></span><br> <br>"], formatted);
 });
-
-//I need a good way to handle blank lines that get padded with ' '.

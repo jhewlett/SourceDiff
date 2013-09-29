@@ -38,9 +38,9 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         s1Trimmed = trimTrailingWhiteSpace(s1Trimmed);
         s2Trimmed = trimTrailingWhiteSpace(s2Trimmed);
 
-        var matrix = createMatrix(s1Trimmed, s2Trimmed);
+        var matrix = createMatrix(0, s1Trimmed, s2Trimmed);
 
-        fillMatrix(s1Trimmed, s2Trimmed, matrix);
+        fillMatrix(0, s1Trimmed, s2Trimmed, matrix);
 
         var diff = new SourceDiff.LineDiff();
 
@@ -79,9 +79,9 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
 
         var prefixLines = trim(s1Lines, s2Lines);
 
-        var matrix = createMatrix(s1Lines, s2Lines);
+        var matrix = createMatrix(prefixLines, s1Lines, s2Lines);
 
-        fillMatrix(s1Lines, s2Lines, matrix);
+        fillMatrix(prefixLines, s1Lines, s2Lines, matrix);
 
         var i = s1Lines.length;
         var j = s2Lines.length;
@@ -89,18 +89,20 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         var added = new SourceDiff.EditSet();
         var deleted = new SourceDiff.EditSet();
 
-        while (i >= 0 && j >= 0) {
-            if (linesAreEqual(s1Lines[i - 1], s2Lines[j - 1])) {
+        while (i >= prefixLines && j >= prefixLines) {
+            var m = i - prefixLines;
+            var n = j - prefixLines;
+            if (m > 0 && n > 0 && linesAreEqual(s1Lines[i - 1], s2Lines[j - 1])) {
                 i--;
                 j--;
-            } else if (j >= 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
-                if (s2Lines[j - 1].length > 0) {
-                    added.add(prefixLines + j - 1);
+            } else if (j >= prefixLines && (i === prefixLines || matrix[m][n - 1] >= matrix[m - 1][n])) {
+                if (j - 1 >= prefixLines && s2Lines[j - 1].length > 0) {
+                    added.add(j - 1);
                 }
                 j--;
-            } else if (i >= 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
-                if (s1Lines[i - 1].length > 0) {
-                    deleted.add(prefixLines + i - 1);
+            } else if (i >= prefixLines && (j === prefixLines || matrix[m][n - 1] < matrix[m - 1][n])) {
+                if (i - 1 >= prefixLines && s1Lines[i - 1].length > 0) {
+                    deleted.add(i - 1);
                 }
                 i--;
             }
@@ -131,7 +133,7 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
                     }
                     checkShiftRun(textLines, editSet, startRun, current);
                 } else if (editArray[i] === current + 1) {
-                    current ++;
+                    current++;
                 } else {    //end of the run
                     checkShiftRun(textLines, editSet, startRun, current);
 
@@ -152,24 +154,24 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return /^\s*$/.test(line);
     };
 
-    var createMatrix = function(s1Lines, s2Lines) {
+    var createMatrix = function(prefixLines, s1Lines, s2Lines) {
         var matrix = [];
-        for (var i = 0; i <= s1Lines.length; i++) {
-            matrix[i] = new Array(s2Lines.length + 1);
+        for (var i = 0; i <= s1Lines.length - prefixLines; i++) {
+            matrix[i] = new Array(s2Lines.length - prefixLines + 1);
             matrix[i][0] = 0;
         }
 
-        for (var j = 1; j <= s2Lines.length; j++) {
+        for (var j = 1; j <= s2Lines.length - prefixLines; j++) {
             matrix[0][j] = 0;
         }
 
         return matrix;
     };
 
-    var fillMatrix = function(s1Lines, s2Lines, matrix) {
-        for (var i = 1; i <= s1Lines.length; i++) {
-            for (var j = 1; j <= s2Lines.length; j++) {
-                if (linesAreEqual(s1Lines[i - 1], s2Lines[j - 1])) {
+    var fillMatrix = function(prefixLines, s1Lines, s2Lines, matrix) {
+        for (var i = 1; i <= s1Lines.length - prefixLines; i++) {
+            for (var j = 1; j <= s2Lines.length - prefixLines; j++) {
+                if (linesAreEqual(s1Lines[i + prefixLines - 1], s2Lines[j + prefixLines - 1])) {
                     matrix[i][j] = matrix[i - 1][j - 1] + 1;
                 } else {
                     matrix[i][j] = Math.max(matrix[i][j - 1], matrix[i - 1][j]);
@@ -193,13 +195,11 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     var trim = function(s1Lines, s2Lines) {
         var prefixLines = 0;
 
-        while (s1Lines.length > 0 && s2Lines.length > 0 && linesAreEqual(s1Lines[0], s2Lines[0])) {
-            s1Lines.shift();
-            s2Lines.shift();
+        while (s1Lines.length > prefixLines && s2Lines.length > prefixLines && linesAreEqual(s1Lines[prefixLines], s2Lines[prefixLines])) {
             prefixLines++;
         }
 
-        while (s1Lines.length > 0 && s2Lines.length > 0 && linesAreEqual(s1Lines[s1Lines.length - 1], s2Lines[s2Lines.length - 1])) {
+        while (s1Lines.length > prefixLines && s2Lines.length > prefixLines && linesAreEqual(s1Lines[s1Lines.length - 1], s2Lines[s2Lines.length - 1])) {
             s1Lines.pop();
             s2Lines.pop();
         }
