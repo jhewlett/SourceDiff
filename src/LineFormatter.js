@@ -1,7 +1,6 @@
 var SourceDiff = SourceDiff || {};
 
 SourceDiff.LineFormatter = function(results, lineDiffs) {
-
     var formatLeftText = function (text1Lines) {
         var deletedText = '';
 

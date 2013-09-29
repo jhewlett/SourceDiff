@@ -1,8 +1,6 @@
 var SourceDiff = SourceDiff || {};
 
 SourceDiff.Diff = function(ignoreLeadingWS) {
-    var _ignoreLeadingWS = ignoreLeadingWS;
-
     var trimTrailingWhiteSpace = function(str) {
         if (str) {
             return str.replace(/\s\s*$/, '');
@@ -11,7 +9,7 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     };
 
     var checkTrimLeadingWhiteSpace = function(str) {
-        if (str && _ignoreLeadingWS) {
+        if (str && ignoreLeadingWS) {
             return str.replace(/^\s\s*/, '');
         }
         return str;

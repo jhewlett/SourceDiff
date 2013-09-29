@@ -1,10 +1,8 @@
 var SourceDiff = SourceDiff || {};
 
 SourceDiff.DiffFormatter = function(diff) {
-    var _diff = diff;
-
     var formattedDiff = function(originalText, editedText) {
-        var results = _diff.diff(originalText, editedText);
+        var results = diff.diff(originalText, editedText);
 
         var lines = lineUpText(originalText, editedText, results);
 
@@ -24,11 +22,11 @@ SourceDiff.DiffFormatter = function(diff) {
     };
 
     var lineUpText = function(originalText, editedText, results) {
-        var originalLines = _diff.split(originalText);
-        var editedLines = _diff.split(editedText);
+        var originalLines = diff.split(originalText);
+        var editedLines = diff.split(editedText);
 
-        _diff.padBlankLines(originalLines);
-        _diff.padBlankLines(editedLines);
+        diff.padBlankLines(originalLines);
+        diff.padBlankLines(editedLines);
 
         results.paddingLeft = new SourceDiff.EditSet();
         results.paddingRight = new SourceDiff.EditSet();
@@ -68,7 +66,7 @@ SourceDiff.DiffFormatter = function(diff) {
 
         for (var i = 0; i < originalLines.length && i < editedLines.length; i++) {
             if (results.modifiedLeft.contains(i) || results.modifiedRight.contains(i)) {
-                var lineDiff = _diff.lineDiff(originalLines[i], editedLines[i]);
+                var lineDiff = diff.lineDiff(originalLines[i], editedLines[i]);
                 lineDiff.cleanUp();
 
                 lineDiffs.addValue(i, lineDiff);
