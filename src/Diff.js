@@ -70,6 +70,27 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         return diff;
     };
 
+    var diff = function(originalText, editedText) {
+        var originalLines = split(originalText);
+        var editedLines = split(editedText);
+
+        padBlankLines(originalLines);
+        padBlankLines(editedLines);
+
+        var startPos = trimCommonLines(originalLines, editedLines);
+
+        var matrix = createMatrix(startPos, originalLines, editedLines);
+
+        fillMatrix(startPos, originalLines, editedLines, matrix);
+
+        var results = findAddsAndDeletes(originalLines, editedLines, startPos, matrix);
+
+        checkShiftEdits(split(originalText), results.deleted);
+        checkShiftEdits(split(editedText), results.added);
+
+        return results;
+    };
+
     var findAddsAndDeletes = function (originalLines, editedLines, startPos, matrix) {
         var i = originalLines.length;
         var j = editedLines.length;
@@ -97,27 +118,6 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         }
 
         return {added: added, deleted: deleted};
-    };
-
-    var diff = function(originalText, editedText) {
-        var originalLines = split(originalText);
-        var editedLines = split(editedText);
-
-        padBlankLines(originalLines);
-        padBlankLines(editedLines);
-
-        var startPos = trimCommonLines(originalLines, editedLines);
-
-        var matrix = createMatrix(startPos, originalLines, editedLines);
-
-        fillMatrix(startPos, originalLines, editedLines, matrix);
-
-        var results = findAddsAndDeletes(originalLines, editedLines, startPos, matrix);
-
-        checkShiftEdits(split(originalText), results.deleted);
-        checkShiftEdits(split(editedText), results.added);
-
-        return results;
     };
 
     var linesAreEqual = function(line1, line2) {
