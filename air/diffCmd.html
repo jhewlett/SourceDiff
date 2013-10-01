@@ -58,12 +58,16 @@
 
     function readFile(currentDirectory, filePath) {
         var file = currentDirectory.resolvePath(filePath);
-        var fileStream = new air.FileStream();
-        fileStream.open(file, air.FileMode.READ);
-        var contents = fileStream.readUTFBytes(fileStream.bytesAvailable);
-        fileStream.close();
+        if (file.exists) {
+            var fileStream = new air.FileStream();
+            fileStream.open(file, air.FileMode.READ);
+            var contents = fileStream.readUTFBytes(fileStream.bytesAvailable);
+            fileStream.close();
 
-        return contents;
+            return contents;
+        }
+
+        return '';
     }
 
     function doDiff(original, edited) {
