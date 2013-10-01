@@ -97,7 +97,7 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
 
         var lastEdit = Math.max(lastDelete, lastAdd);
 
-        return Math.min(lines.length, lastEdit + 10);
+        return Math.min(lines.length, lastEdit + 11);
     };
 
     var getClassNameLeft = function (results, i) {

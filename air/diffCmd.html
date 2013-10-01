@@ -3,18 +3,19 @@
 <head>
     <title>SourceDiff</title>
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="main_style.css" rel="stylesheet" type="text/css">
+    <link href="air_style.css" rel="stylesheet" type="text/css">
     <script src="AIRAliases.js" type="text/javascript"></script>
 </head>
 <body onload="appLoad()">
-<div class="wrapper">
-    <div class="left">
-        <h3>Original</h3>
-    </div>
-    <div class="right">
-        <h3>Edit</h3>
-    </div>
-</div>
+<!--<div class="wrapper">-->
+    <!--<div class="left">-->
+        <!--<h3>Original</h3>-->
+    <!--</div>-->
+    <!--<div class="right">-->
+        <!--<h3>Edit</h3>-->
+    <!--</div>-->
+<!--</div>-->
 <div class="wrapper">
     <div class="left scroll" id="scrollLeft">
         <pre id="original_result"></pre>
@@ -32,9 +33,6 @@
     function appLoad() {
         window.nativeWindow.maximize();
 
-        maximizeHeight(document.getElementById('scrollLeft'));
-        maximizeHeight(document.getElementById('scrollRight'));
-
         air.NativeApplication.nativeApplication.addEventListener(air.InvokeEvent.INVOKE, onInvoke);
 
         var scrollLeft = document.getElementById('scrollLeft');
@@ -49,12 +47,6 @@
             scrollLeft.scrollLeft = scrollRight.scrollLeft;
             scrollLeft.scrollTop = scrollRight.scrollTop;
         });
-    }
-
-    function maximizeHeight(element) {
-        if (window.innerHeight) {
-            element.style.height = (window.innerHeight - element.offsetTop - 10) + "px";
-        }
     }
 
     function onInvoke(event) {
