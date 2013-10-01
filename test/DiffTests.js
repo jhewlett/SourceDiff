@@ -40,6 +40,14 @@ test("everything is an add", function() {
     assertEquals([], result.deleted.all());
 });
 
+test("everything is an add with blank line in the added text", function() {
+    var diff = new SourceDiff.Diff(false);
+    var result = diff.diff('', 'added text\n\nthat was a blank line');
+
+    assertEquals([], result.deleted.all());
+    assertEquals([0, 1, 2], result.added.all());
+});
+
 test("Deleting last line", function() {
     var diff = new SourceDiff.Diff(false);
     var result = diff.diff('test\ndelete me', 'test');
@@ -54,6 +62,14 @@ test("Everything is a delete", function() {
 
     assertEquals([], result.added.all());
     assertEquals([0], result.deleted.all());
+});
+
+test("Everything is a delete with blank line in the deleted text", function() {
+    var diff = new SourceDiff.Diff(false);
+    var result = diff.diff('delete me\n\nblank line', '');
+
+    assertEquals([], result.added.all());
+    assertEquals([0, 1, 2], result.deleted.all());
 });
 
 test("line diff remove and add lines", function() {

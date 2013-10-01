@@ -96,26 +96,41 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         var added = new SourceDiff.EditSet();
         var deleted = new SourceDiff.EditSet();
 
-        while (i >= startPos && j >= startPos) {
-            var m = i - startPos;
-            var n = j - startPos;
-            if (m > 0 && n > 0 && linesAreEqual(originalLines[i - 1], editedLines[j - 1])) {
-                i--;
-                j--;
-            } else if (j >= startPos && (i === startPos || matrix[m][n - 1] >= matrix[m - 1][n])) {
-                if (j - 1 >= startPos && editedLines[j - 1].length > 0) {
-                    added.add(j - 1);
+        var allAddsOrDeletes = checkAllAddsOrDeletes(originalLines, editedLines, added)
+            || checkAllAddsOrDeletes(editedLines, originalLines, deleted);
+
+        if (!allAddsOrDeletes) {
+            while (i >= startPos && j >= startPos) {
+                var m = i - startPos;
+                var n = j - startPos;
+                if (m > 0 && n > 0 && linesAreEqual(originalLines[i - 1], editedLines[j - 1])) {
+                    i--;
+                    j--;
+                } else if (j >= startPos && (i === startPos || matrix[m][n - 1] >= matrix[m - 1][n])) {
+                    if (j - 1 >= startPos && editedLines[j - 1].length > 0) {
+                        added.add(j - 1);
+                    }
+                    j--;
+                } else if (i >= startPos && (j === startPos || matrix[m][n - 1] < matrix[m - 1][n])) {
+                    if (i - 1 >= startPos && originalLines[i - 1].length > 0) {
+                        deleted.add(i - 1);
+                    }
+                    i--;
                 }
-                j--;
-            } else if (i >= startPos && (j === startPos || matrix[m][n - 1] < matrix[m - 1][n])) {
-                if (i - 1 >= startPos && originalLines[i - 1].length > 0) {
-                    deleted.add(i - 1);
-                }
-                i--;
             }
         }
 
         return {added: added, deleted: deleted};
+    };
+
+    var checkAllAddsOrDeletes = function(lines, otherLines, editSet) {
+        if (lines.length === 1 && lines[0] === '') {
+            for (var i = 0; i < otherLines.length; i++) {
+                editSet.add(i);
+            }
+            return true;
+        }
+        return false;
     };
 
     var linesAreEqual = function(line1, line2) {
