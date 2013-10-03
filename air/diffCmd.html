@@ -16,6 +16,14 @@
         <!--<h3>Edit</h3>-->
     <!--</div>-->
 <!--</div>-->
+<div style="margin-left: auto; margin-right: auto; width: 300px">
+    <button class="btn" onclick="jumpToPrev()">
+        <strong>Previous Edit</strong>
+    </button>
+    <button class="btn" onclick="jumpToNext()">
+        <strong>Next Edit</strong>
+    </button>
+</div>
 <div class="wrapper">
     <div class="left scroll" id="scrollLeft">
         <pre id="original_result"></pre>
@@ -30,6 +38,8 @@
 <script src="DiffFormatter.js"></script>
 <script src="LineFormatter.js"></script>
 <script>
+    var currentEdit = 0;
+
     function appLoad() {
         window.nativeWindow.maximize();
 
@@ -47,6 +57,20 @@
             scrollLeft.scrollLeft = scrollRight.scrollLeft;
             scrollLeft.scrollTop = scrollRight.scrollTop;
         });
+    }
+
+    function jumpToNext() {
+        currentEdit++;
+        jumpTo(currentEdit);
+    }
+
+    function jumpToPrev() {
+        currentEdit--;
+        jumpTo(currentEdit);
+    }
+
+    function jumpTo(label) {
+        window.location.hash = label;
     }
 
     function onInvoke(event) {
