@@ -17,6 +17,7 @@
     top: 50px; right: 0; bottom: 60px; left: 0;
     height: auto;
     overflow-y: scroll;
+    border-top: 1px solid lightgray;
 }
 
 #editButtons {
