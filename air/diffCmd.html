@@ -8,15 +8,15 @@
     <script src="AIRAliases.js" type="text/javascript"></script>
 </head>
 <body onload="appLoad()">
-<!--<div class="wrapper">-->
-    <!--<div class="left">-->
-        <!--<h3>Original</h3>-->
-    <!--</div>-->
-    <!--<div class="right">-->
-        <!--<h3>Edit</h3>-->
-    <!--</div>-->
-<!--</div>-->
-<div style="margin-left: auto; margin-right: auto; width: 300px">
+<div class="wrapper">
+    <div class="left">
+        <h3>Original</h3>
+    </div>
+    <div class="left">
+        <h3>Edit</h3>
+    </div>
+</div>
+<div id="editButtons">
     <button class="btn" onclick="jumpToPrev()">
         <strong>Previous Edit</strong>
     </button>
@@ -25,10 +25,10 @@
     </button>
 </div>
 <div class="wrapper">
-    <div class="left scroll" id="scrollLeft">
+    <div class="air-left scroll" id="scrollLeft">
         <pre id="original_result"></pre>
     </div>
-    <div class="right scroll" id="scrollRight">
+    <div class="air-right scroll" id="scrollRight">
         <pre id="edited_result"></pre>
     </div>
 </div>
