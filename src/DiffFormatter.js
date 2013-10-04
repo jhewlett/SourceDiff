@@ -18,7 +18,7 @@ SourceDiff.DiffFormatter = function(diff) {
         var deletedText = lineFormatter.formatLeftText(originalLines);
         var addedText = lineFormatter.formatRightText(editedLines);
 
-        return [deletedText, addedText];
+        return [deletedText, addedText, lineFormatter.getEditIterator()];
     };
 
     var lineUpText = function(originalText, editedText, results) {

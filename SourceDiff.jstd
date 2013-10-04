@@ -6,6 +6,7 @@ load:
   - src/DiffFormatter.js
   - src/LineDiff.js
   - src/LineFormatter.js
+  - src/AnchorIterator.js
 
 test:
   - test/*.js

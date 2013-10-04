@@ -359,5 +359,22 @@ test("LineDiff with blank lines", function() {
 
     var formatted = diffFormatter.formattedDiff('\n', '*\n');
 
-    assertEquals(["<span class=\"modified\"> </span><br> <br>","<span class=\"modified\"><span class=\"modified-light\">*</span></span><br> <br>"], formatted);
+    assertEquals(formatted[0], "<a name=\"0\"></a><span class=\"modified\"> </span><br> <br>");
+    assertEquals(formatted[1], "<span class=\"modified\"><span class=\"modified-light\">*</span></span><br> <br>");
+});
+
+test("AnchorIterator", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var diffFormatter = new SourceDiff.DiffFormatter(diff);
+
+    var formatted = diffFormatter.formattedDiff('edit1\ncommon\n\ncommon2\ncommon3', 'edit2\ncommon\ncommon2\ncommon3\nnew line');
+
+    var iterator = formatted[2];
+    assertEquals(false, iterator.getPrevEdit());
+    assertEquals(1, iterator.getNextEdit());
+    assertEquals(0, iterator.getPrevEdit());
+    iterator.getNextEdit();
+    assertEquals(4, iterator.getNextEdit());
+    assertEquals(false, iterator.getNextEdit());
 });

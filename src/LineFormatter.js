@@ -1,39 +1,24 @@
 var SourceDiff = SourceDiff || {};
 
 SourceDiff.LineFormatter = function(results, lineDiffs) {
-    var leftAnchors = new SourceDiff.EditSet();
-    var rightAnchors = new SourceDiff.EditSet();
+    var anchors = new SourceDiff.EditSet();
 
     var added = results.added.all();
     var deleted = results.deleted.all();
 
-    var currentAnchor = 0;
+    var lineIsCommon = function(i) {
+        return !results.added.contains(i) && !results.deleted.contains(i)
+    };
 
-    if (results.added.contains(0)) {
-        leftAnchors.add(0);
-    } else if (results.deleted.contains(0)){
-        rightAnchors.add(0);
+    if (!lineIsCommon(0)) {
+        anchors.add(0);
     }
 
     for (var i = 1; i < Math.max(Math.max.apply(null, added), Math.max.apply(null, deleted)); i++) {
-        if (!results.added.contains(i) && !results.deleted.contains(i)) {
-            if (results.added.contains(i + 1)) {
-                leftAnchors.add(i + 1);
-            } else if (results.deleted.contains(i + 1)) {
-                rightAnchors.add(i + 1);
-            }
+        if (lineIsCommon(i) && !lineIsCommon(i + 1)) {
+            anchors.add(i);
         }
     }
-
-//    SourceDiff.Iterator = function() {
-//        var allLeftAnchors = leftAnchors.all();
-//        var allRightAnchors = rightAnchors.all();
-//
-//        var getNextEdit = function (current) {
-//
-//        }
-//
-//    }
 
     var formatLeftText = function (text1Lines) {
         var deletedText = '';
@@ -42,9 +27,8 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
         var text1EndingPos = getEndingPos(results, text1Lines);
 
         for (var i = startingPos; i < text1EndingPos; i++) {
-            if (leftAnchors.contains(i)) {
-                deletedText += '<a name="' + currentAnchor + '"></a>';
-                currentAnchor++;
+            if (anchors.contains(i)) {
+                deletedText += '<a name="' + i + '"></a>';
             }
             if (lineDiffs.contains(i) && results.modifiedLeft.contains(i)) {
                 var lineDiff = lineDiffs.get(i);
@@ -65,10 +49,6 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
         var text2EndingPos = getEndingPos(results, text2Lines);
 
         for (var i = startingPos; i < text2EndingPos; i++) {
-            if (rightAnchors.contains(i)) {
-                addedText += '<a name="' + currentAnchor + '"></a>';
-                currentAnchor++;
-            }
             if (lineDiffs.contains(i) && results.modifiedRight.contains(i)) {
                 var lineDiff = lineDiffs.get(i);
                 addedText += appendModifiedLine(text2Lines[i], lineDiff.added);
@@ -199,8 +179,13 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
         });
     };
 
+    var getEditIterator = function() {
+        return new SourceDiff.AnchorIterator(anchors);
+    };
+
     return {
         formatLeftText: formatLeftText,
-        formatRightText: formatRightText
+        formatRightText: formatRightText,
+        getEditIterator: getEditIterator
     };
 };

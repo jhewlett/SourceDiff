@@ -37,9 +37,8 @@
 <script src="Diff.js"></script>
 <script src="DiffFormatter.js"></script>
 <script src="LineFormatter.js"></script>
+<script src="AnchorIterator.js"></script>
 <script>
-    var currentEdit = 0;
-
     function appLoad() {
         window.nativeWindow.maximize();
 
@@ -60,13 +59,21 @@
     }
 
     function jumpToNext() {
-        currentEdit++;
-        jumpTo(currentEdit);
+        if (anchorIterator) {
+            var line = anchorIterator.getNextEdit();
+            if (line) {
+                jumpTo(line);
+            }
+        }
     }
 
     function jumpToPrev() {
-        currentEdit--;
-        jumpTo(currentEdit);
+        if (anchorIterator) {
+            var line = anchorIterator.getPrevEdit();
+            if (line) {
+                jumpTo(line);
+            }
+        }
     }
 
     function jumpTo(label) {
@@ -94,6 +101,8 @@
         return '';
     }
 
+    var anchorIterator;
+
     function doDiff(original, edited) {
         var diff = new SourceDiff.Diff(true);
         var formatter = new SourceDiff.DiffFormatter(diff);
@@ -102,6 +111,8 @@
 
         document.getElementById('original_result').innerHTML = results[0];
         document.getElementById('edited_result').innerHTML = results[1];
+
+        anchorIterator = results[2];
     }
 </script>
 </body>
