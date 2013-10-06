@@ -61,7 +61,7 @@
     function jumpToNext() {
         if (anchorIterator) {
             var line = anchorIterator.getNextEdit();
-            if (line) {
+            if (line !== false) {
                 jumpTo(line);
             }
         }
@@ -70,7 +70,7 @@
     function jumpToPrev() {
         if (anchorIterator) {
             var line = anchorIterator.getPrevEdit();
-            if (line) {
+            if (line !== false) {
                 jumpTo(line);
             }
         }

@@ -378,3 +378,17 @@ test("AnchorIterator", function() {
     assertEquals(4, iterator.getNextEdit());
     assertEquals(false, iterator.getNextEdit());
 });
+
+test("AnchorIterator - Diffs on line 1 are recorded", function() {
+    var diff = new SourceDiff.Diff(false);
+
+    var diffFormatter = new SourceDiff.DiffFormatter(diff);
+
+    var formatted = diffFormatter.formattedDiff('common\nledit1\ncommon\nledit2', 'common\nredit1\ncommon\nredit2');
+
+    var iterator = formatted[2];
+    assertEquals(false, iterator.getPrevEdit());
+    assertEquals(2, iterator.getNextEdit());
+    assertEquals(false, iterator.getNextEdit());
+    assertEquals(0, iterator.getPrevEdit());
+});

@@ -14,7 +14,7 @@ SourceDiff.LineFormatter = function(results, lineDiffs) {
         anchors.add(0);
     }
 
-    for (var i = 1; i < Math.max(Math.max.apply(null, added), Math.max.apply(null, deleted)); i++) {
+    for (var i = 0; i < Math.max(Math.max.apply(null, added), Math.max.apply(null, deleted)); i++) {
         if (lineIsCommon(i) && !lineIsCommon(i + 1)) {
             anchors.add(i);
         }
