@@ -3,14 +3,14 @@ var SourceDiff = SourceDiff || {};
 SourceDiff.Diff = function(ignoreLeadingWS) {
     var trimTrailingWhiteSpace = function(str) {
         if (str) {
-            return str.replace(/\s\s*$/, '');
+            return str.trimLeft();
         }
         return str;
     };
 
     var checkTrimLeadingWhiteSpace = function(str) {
         if (str && ignoreLeadingWS) {
-            return str.replace(/^\s\s*/, '');
+            return str.trimRight();
         }
         return str;
     };
@@ -189,8 +189,10 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
 
     var fillMatrix = function(startPos, originalLines, editedLines, matrix) {
         for (var i = 1; i <= originalLines.length - startPos; i++) {
+            var originalTrimmed = trimWhiteSpace(originalLines[i + startPos - 1]);
             for (var j = 1; j <= editedLines.length - startPos; j++) {
-                if (linesAreEqual(originalLines[i + startPos - 1], editedLines[j + startPos - 1])) {
+                var trimmedEdit = trimWhiteSpace(editedLines[j + startPos - 1]);
+                if (originalTrimmed === trimmedEdit) {
                     matrix[i][j] = matrix[i - 1][j - 1] + 1;
                 } else {
                     matrix[i][j] = Math.max(matrix[i][j - 1], matrix[i - 1][j]);
