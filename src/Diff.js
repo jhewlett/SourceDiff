@@ -3,14 +3,14 @@ var SourceDiff = SourceDiff || {};
 SourceDiff.Diff = function(ignoreLeadingWS) {
     var trimTrailingWhiteSpace = function(str) {
         if (str) {
-            return str.trimLeft();
+            return str.trimRight();
         }
         return str;
     };
 
     var checkTrimLeadingWhiteSpace = function(str) {
         if (str && ignoreLeadingWS) {
-            return str.trimRight();
+            return str.trimLeft();
         }
         return str;
     };
