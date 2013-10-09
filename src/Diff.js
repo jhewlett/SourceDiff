@@ -16,10 +16,13 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     };
 
     var trimWhiteSpace = function(str) {
-        str = trimTrailingWhiteSpace(str);
-        str = checkTrimLeadingWhiteSpace(str);
+        if (!str) return str;
 
-        return str;
+        if (ignoreLeadingWS) {
+            return str.trim();
+        } else {
+            return str.trimRight();
+        }
     };
 
     var split = function(string) {
