@@ -43,6 +43,10 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
 
         fillMatrix(0, originalTrimmed, editedTrimmed, matrix);
 
+        return createLineDiff(originalTrimmed, editedTrimmed, originalOffset, editOffset, matrix);
+    };
+
+    var createLineDiff = function (originalTrimmed, editedTrimmed, originalOffset, editOffset, matrix) {
         var diff = new SourceDiff.LineDiff();
 
         var i = originalTrimmed.length;
