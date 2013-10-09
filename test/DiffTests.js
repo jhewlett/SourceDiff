@@ -6,7 +6,7 @@ test("Trim trims any common prefixes", function() {
 
     var diff = new SourceDiff.Diff(false);
 
-    var prefixCount = diff.trim(arr1, arr2);
+    var prefixCount = diff.trimCommonLines(arr1, arr2);
 
     assertEquals(3, prefixCount);
 });
@@ -16,7 +16,7 @@ test("Trim handles identical input", function() {
     var arr2 = ['cat'];
 
     var diff = new SourceDiff.Diff(false);
-    var prefix = diff.trim(arr1, arr2);
+    var prefix = diff.trimCommonLines(arr1, arr2);
 
     assertEquals(1, prefix);
 });
@@ -26,7 +26,7 @@ test("Trim handles common suffixes", function() {
     var arr2 = ['singing', 'in', 'the', 'rain'];
 
     var diff = new SourceDiff.Diff(false);
-    diff.trim(arr1, arr2);
+    diff.trimCommonLines(arr1, arr2);
 
     assertEquals(["dancing"], arr1);
     assertEquals(["singing"], arr2);

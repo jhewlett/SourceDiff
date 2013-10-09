@@ -25,10 +25,6 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         }
     };
 
-    var split = function(string) {
-        return string.split(/\r?\n/);
-    };
-
     var lineDiff = function(originalLine, editedLine) {
         var originalTrimmed = checkTrimLeadingWhiteSpace(originalLine);
         var editedTrimmed = checkTrimLeadingWhiteSpace(editedLine);
@@ -76,11 +72,11 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
     };
 
     var diff = function(originalText, editedText) {
-        var originalLines = split(originalText);
-        var editedLines = split(editedText);
+        var originalLines = SourceDiff.split(originalText);
+        var editedLines = SourceDiff.split(editedText);
 
-        padBlankLines(originalLines);
-        padBlankLines(editedLines);
+        SourceDiff.padBlankLines(originalLines);
+        SourceDiff.padBlankLines(editedLines);
 
         var startPos = trimCommonLines(originalLines, editedLines);
 
@@ -90,8 +86,8 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
 
         var results = findAddsAndDeletes(originalLines, editedLines, startPos, matrix);
 
-        checkShiftEdits(split(originalText), results.deleted);
-        checkShiftEdits(split(editedText), results.added);
+        checkShiftEdits(SourceDiff.split(originalText), results.deleted);
+        checkShiftEdits(SourceDiff.split(editedText), results.added);
 
         return results;
     };
@@ -208,18 +204,6 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
         }
     };
 
-    var padBlankLines = function(lines) {
-        if (lines.length === 1 && lines[0] === '') {
-            return;
-        }
-
-        for (var l = 0; l < lines.length; l++) {
-            if (lines[l] === '') {
-                lines[l] = ' ';
-            }
-        }
-    };
-
     var trimCommonLines = function(originalLines, editedLines) {
         var linesRemaining = function(startPos) {
             return originalLines.length > startPos && editedLines.length > startPos
@@ -241,9 +225,7 @@ SourceDiff.Diff = function(ignoreLeadingWS) {
 
     return {
         diff: diff,
-        trim: trimCommonLines,   //exposed for testing
-        padBlankLines: padBlankLines,       //used by DiffFormatter
-        lineDiff: lineDiff,
-        split: split                    //used by DiffFormatter
+        trimCommonLines: trimCommonLines,   //exposed for testing
+        lineDiff: lineDiff
     };
 };

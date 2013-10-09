@@ -1,1 +1,1 @@
-adt -package -storetype pkcs12 -keystore selfCert.p12 SourceDiff.air SourceDiff-app.xml diffCmd.html AIRAliases.js air_style.css -C ..\lib bootstrap.min.css -C ..\src Diff.js DiffFormatter.js EditSet.js LineDiff.js LineFormatter.js AnchorIterator.js main_style.css
+adt -package -storetype pkcs12 -keystore selfCert.p12 SourceDiff.air SourceDiff-app.xml diffCmd.html AIRAliases.js air_style.css -C ..\lib bootstrap.min.css -C ..\src LineUtils.js Diff.js DiffFormatter.js EditSet.js LineDiff.js LineFormatter.js AnchorIterator.js main_style.css

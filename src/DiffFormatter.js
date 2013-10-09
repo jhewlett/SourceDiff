@@ -22,11 +22,11 @@ SourceDiff.DiffFormatter = function(diff) {
     };
 
     var lineUpText = function(originalText, editedText, results) {
-        var originalLines = diff.split(originalText);
-        var editedLines = diff.split(editedText);
+        var originalLines = SourceDiff.split(originalText);
+        var editedLines = SourceDiff.split(editedText);
 
-        diff.padBlankLines(originalLines);
-        diff.padBlankLines(editedLines);
+        SourceDiff.padBlankLines(originalLines);
+        SourceDiff.padBlankLines(editedLines);
 
         results.paddingLeft = new SourceDiff.EditSet();
         results.paddingRight = new SourceDiff.EditSet();
