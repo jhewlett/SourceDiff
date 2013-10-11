@@ -29,4 +29,4 @@ To create the air package, download the Air SDK. `cd` into the `air` directory a
 
 Future enhancements:
 + Syntax highlighting
-+ Buttons to navigate to previous and next difference
++ Configure to ignore or show whitespace changes
