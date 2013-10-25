@@ -17,7 +17,7 @@ The file `diff.html` shows one example of how you can use SourceDiff in the brow
 
 Using SourceDiff on your desktop
 =========
-There are also deployment files to package up SourceDiff as an Adobe Air package. This provides a command-line interface to use the program on your desktop. This is especially useful for setting up SourceDiff as a diff tool in git, for example. You can also download the AIR package in the release section.
+There are also deployment files to package up SourceDiff as an Adobe Air package. This provides a command-line interface to use the program on your desktop. This is especially useful for setting up SourceDiff as a diff tool in git, for example. You can also download the Air package in the release section.
 
 Command Line Arguments
 ----------------
